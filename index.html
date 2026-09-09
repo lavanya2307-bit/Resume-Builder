@@ -3,127 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="theme-color" content="#0b1020">
   <title>Resume Builder</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
-    rel="stylesheet"
-  >
-
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- ================= HEADER ================= -->
-
   <header class="topbar">
-
     <div class="brand">
       <div class="brand-mark">R</div>
-
       <div>
         <h1>Resume Builder</h1>
-        <p>Build a professional one-page resume</p>
+        <p>Create a professional one-page resume</p>
       </div>
     </div>
 
     <div class="top-actions">
-
-      <button class="theme-btn" id="themeBtn" title="Toggle theme">
-        ☼
-      </button>
-
-      <button class="clear-btn" id="clearBtn">
-        Clear
-      </button>
-
-      <button class="download-btn" onclick="window.print()">
-        Download PDF
-      </button>
-
+      <button type="button" id="themeBtn" class="secondary-btn">☾</button>
+      <button type="button" id="clearBtn" class="secondary-btn">Clear</button>
+      <button type="button" id="downloadBtn" class="primary-btn">Download PDF</button>
     </div>
-
   </header>
 
 
-  <!-- ================= MAIN ================= -->
-
-  <main class="app">
+  <main class="app-layout">
 
     <!-- ================= EDITOR ================= -->
 
     <section class="editor">
 
-      <div class="editor-heading">
-        <div>
-          <span class="eyebrow">RESUME EDITOR</span>
-          <h2>Your Information</h2>
-          <p>Fill in only what you need. Your resume updates instantly.</p>
-        </div>
-      </div>
-
-
       <!-- PERSONAL INFORMATION -->
-
       <div class="card">
+        <div class="section-number">01</div>
 
-        <div class="card-title">
-          <span class="number">01</span>
-
+        <div class="card-header">
           <div>
-            <h3>Personal Information</h3>
+            <h2>Personal Information</h2>
             <p>Your basic professional details</p>
           </div>
         </div>
 
+        <div class="form-grid">
 
-        <div class="photo-area">
-
-          <div class="photo-preview" id="photoPreview">
-            <span>+</span>
+          <div class="field full">
+            <label for="name">Full Name</label>
+            <input id="name" type="text">
           </div>
 
-          <div>
-            <label class="upload-label">
-              Profile Photo
-              <input type="file" id="photoInput" accept="image/*">
-            </label>
-
-            <small>Optional • JPG or PNG</small>
-          </div>
-
-        </div>
-
-
-        <div class="grid two">
-
-          <div class="field">
-            <label>Full Name *</label>
-            <input id="name" type="text" placeholder="e.g. Alex Johnson">
+          <div class="field full">
+            <label for="title">Professional Title</label>
+            <input id="title" type="text">
           </div>
 
           <div class="field">
-            <label>Professional Title</label>
-            <input id="title" type="text" placeholder="e.g. Frontend Developer">
+            <label for="email">Email</label>
+            <input id="email" type="email">
           </div>
 
           <div class="field">
-            <label>Email *</label>
-            <input id="email" type="email" placeholder="alex@email.com">
+            <label for="phone">Phone</label>
+            <input id="phone" type="tel">
           </div>
 
           <div class="field">
-            <label>Phone</label>
-            <input id="phone" type="tel" placeholder="+91 98765 43210">
-          </div>
-
-          <div class="field">
-            <label>Country</label>
+            <label for="country">Country</label>
             <select id="country">
               <option value="">Select country</option>
               <option>India</option>
@@ -131,237 +75,188 @@
               <option>United Kingdom</option>
               <option>Canada</option>
               <option>Australia</option>
-              <option>Germany</option>
               <option>Singapore</option>
               <option>United Arab Emirates</option>
+              <option>Germany</option>
+              <option>France</option>
+              <option>Japan</option>
+              <option>Other</option>
             </select>
           </div>
 
           <div class="field">
-            <label>State / Province</label>
+            <label for="state">State / Province</label>
             <select id="state">
-              <option value="">Select state</option>
-              <option>Tamil Nadu</option>
-              <option>Kerala</option>
-              <option>Karnataka</option>
-              <option>Andhra Pradesh</option>
-              <option>Telangana</option>
-              <option>Maharashtra</option>
-              <option>Delhi</option>
-              <option>West Bengal</option>
-              <option>Gujarat</option>
-              <option>Rajasthan</option>
+              <option value="">Select state / province</option>
             </select>
           </div>
 
           <div class="field">
-            <label>District</label>
+            <label for="district">District</label>
             <select id="district">
               <option value="">Select district</option>
-              <option>Chennai</option>
-              <option>Coimbatore</option>
-              <option>Madurai</option>
-              <option>Salem</option>
-              <option>Trichy</option>
-              <option>Tirunelveli</option>
-              <option>Thanjavur</option>
-              <option>Erode</option>
-              <option>Vellore</option>
             </select>
           </div>
 
           <div class="field">
-            <label>City / Town</label>
-            <input id="city" type="text" placeholder="e.g. Chennai">
+            <label for="city">City / Town</label>
+            <input id="city" type="text">
           </div>
 
-        </div>
-
-
-        <div class="field">
-          <label>Street Address</label>
-          <input id="address" type="text" placeholder="Street, Area, Building / Door No.">
-        </div>
-
-
-        <div class="grid two">
-
-          <div class="field">
-            <label>LinkedIn</label>
-            <input id="linkedin" type="url" placeholder="linkedin.com/in/yourname">
+          <div class="field full">
+            <label for="address">Street Address</label>
+            <input id="address" type="text">
           </div>
 
           <div class="field">
-            <label>GitHub / Portfolio</label>
-            <input id="github" type="url" placeholder="github.com/yourname">
+            <label for="linkedin">LinkedIn</label>
+            <input id="linkedin" type="url">
+          </div>
+
+          <div class="field">
+            <label for="github">GitHub / Portfolio</label>
+            <input id="github" type="url">
+          </div>
+
+          <div class="field full">
+            <label for="photo">Profile Photo</label>
+            <input id="photo" type="file" accept="image/png,image/jpeg">
           </div>
 
         </div>
-
       </div>
 
 
       <!-- SUMMARY -->
-
       <div class="card">
+        <div class="section-number">02</div>
 
-        <div class="card-title">
-          <span class="number">02</span>
-
+        <div class="card-header">
           <div>
-            <h3>Professional Summary</h3>
-            <p>A short introduction about you</p>
+            <h2>Professional Summary</h2>
+            <p>A concise overview of your professional profile</p>
           </div>
         </div>
 
         <div class="field">
-          <textarea
-            id="summary"
-            rows="5"
-            placeholder="Write 2–4 concise sentences describing your background, strengths and career goals."
-          ></textarea>
+          <label for="summary">Summary</label>
+          <textarea id="summary" rows="5"></textarea>
         </div>
-
       </div>
 
 
       <!-- EXPERIENCE -->
-
       <div class="card">
+        <div class="section-number">03</div>
 
-        <div class="card-title">
-          <span class="number">03</span>
-
+        <div class="card-header">
           <div>
-            <h3>Experience</h3>
-            <p>Add your most relevant experience</p>
+            <h2>Experience</h2>
+            <p>Add your professional experience</p>
           </div>
+
+          <button type="button" class="add-btn" id="addExperience">
+            + Add
+          </button>
         </div>
 
         <div id="experienceList"></div>
-
-        <button class="add-btn" onclick="addExperience()">
-          + Add Experience
-        </button>
-
       </div>
 
 
       <!-- EDUCATION -->
-
       <div class="card">
+        <div class="section-number">04</div>
 
-        <div class="card-title">
-          <span class="number">04</span>
-
+        <div class="card-header">
           <div>
-            <h3>Education</h3>
-            <p>Your academic background</p>
+            <h2>Education</h2>
+            <p>Add your academic qualifications</p>
           </div>
+
+          <button type="button" class="add-btn" id="addEducation">
+            + Add
+          </button>
         </div>
 
         <div id="educationList"></div>
-
-        <button class="add-btn" onclick="addEducation()">
-          + Add Education
-        </button>
-
       </div>
 
 
       <!-- PROJECTS -->
-
       <div class="card">
+        <div class="section-number">05</div>
 
-        <div class="card-title">
-          <span class="number">05</span>
-
+        <div class="card-header">
           <div>
-            <h3>Projects</h3>
-            <p>Show your strongest work</p>
+            <h2>Projects</h2>
+            <p>Highlight relevant projects</p>
           </div>
+
+          <button type="button" class="add-btn" id="addProject">
+            + Add
+          </button>
         </div>
 
         <div id="projectList"></div>
-
-        <button class="add-btn" onclick="addProject()">
-          + Add Project
-        </button>
-
       </div>
 
 
       <!-- SKILLS -->
-
       <div class="card">
+        <div class="section-number">06</div>
 
-        <div class="card-title">
-          <span class="number">06</span>
-
+        <div class="card-header">
           <div>
-            <h3>Skills</h3>
-            <p>Technical and professional skills</p>
+            <h2>Skills</h2>
+            <p>Add your professional and technical skills</p>
           </div>
         </div>
 
-        <div class="skill-input">
-
-          <input
-            id="skillInput"
-            type="text"
-            placeholder="e.g. JavaScript"
-          >
-
-          <button onclick="addSkill()">Add</button>
-
+        <div class="skill-input-row">
+          <input id="skillInput" type="text">
+          <button type="button" class="add-btn" id="addSkill">Add</button>
         </div>
 
-        <div class="skill-list" id="skillList"></div>
-
+        <div id="skillList" class="tag-list"></div>
       </div>
 
 
       <!-- CERTIFICATIONS -->
-
       <div class="card">
+        <div class="section-number">07</div>
 
-        <div class="card-title">
-          <span class="number">07</span>
-
+        <div class="card-header">
           <div>
-            <h3>Certifications</h3>
-            <p>Relevant certifications only</p>
+            <h2>Certifications</h2>
+            <p>Add relevant certifications</p>
           </div>
+
+          <button type="button" class="add-btn" id="addCertification">
+            + Add
+          </button>
         </div>
 
         <div id="certificationList"></div>
-
-        <button class="add-btn" onclick="addCertification()">
-          + Add Certification
-        </button>
-
       </div>
 
 
       <!-- LANGUAGES -->
-
       <div class="card">
+        <div class="section-number">08</div>
 
-        <div class="card-title">
-          <span class="number">08</span>
-
+        <div class="card-header">
           <div>
-            <h3>Languages</h3>
-            <p>Languages you can communicate in</p>
+            <h2>Languages</h2>
+            <p>Add languages and proficiency levels</p>
           </div>
+
+          <button type="button" class="add-btn" id="addLanguage">
+            + Add
+          </button>
         </div>
 
         <div id="languageList"></div>
-
-        <button class="add-btn" onclick="addLanguage()">
-          + Add Language
-        </button>
-
       </div>
 
     </section>
@@ -369,16 +264,16 @@
 
     <!-- ================= PREVIEW ================= -->
 
-    <section class="preview-area">
+    <aside class="preview-panel">
 
-      <div class="preview-header">
+      <div class="preview-toolbar">
 
         <div>
-          <span class="eyebrow">LIVE PREVIEW</span>
-          <h2>Your Resume</h2>
+          <span class="preview-label">LIVE PREVIEW</span>
+          <h2>Resume</h2>
         </div>
 
-        <div class="preview-tools">
+        <div class="preview-controls">
 
           <select id="templateSelect">
             <option value="classic">Classic</option>
@@ -387,10 +282,10 @@
           </select>
 
           <input
-            type="color"
             id="accentColor"
-            value="#3157d5"
-            title="Accent colour"
+            type="color"
+            value="#2563eb"
+            title="Accent color"
           >
 
         </div>
@@ -398,159 +293,75 @@
       </div>
 
 
-      <div class="resume-frame">
+      <div class="resume-stage">
 
-        <article class="resume" id="resume">
+        <article id="resumePreview" class="resume-page classic">
 
-          <!-- RESUME HEADER -->
+          <div class="resume-header">
 
-          <header class="resume-header">
-
-            <div class="resume-identity">
-
-              <h1 id="previewName">Your Name</h1>
-
-              <h2 id="previewTitle">
-                Professional Title
-              </h2>
-
-              <div class="contact-line" id="previewContact">
-                email@example.com
-              </div>
-
-              <div class="links-line" id="previewLinks"></div>
-
+            <div class="resume-photo-wrap">
+              <img id="previewPhoto" class="resume-photo" alt="">
             </div>
 
-            <img
-              id="previewPhoto"
-              class="resume-photo"
-              alt=""
-            >
+            <div class="resume-identity">
+              <h1 id="previewName"></h1>
+              <h2 id="previewTitle"></h2>
 
-          </header>
+              <div id="previewContact" class="contact-line"></div>
+            </div>
+
+          </div>
 
 
-          <!-- SUMMARY -->
-
-          <section
-            class="resume-section"
-            id="summarySection"
-          >
-
+          <section id="previewSummarySection" class="resume-section">
             <h3>PROFILE</h3>
-
-            <p id="previewSummary">
-              Your professional summary will appear here.
-            </p>
-
+            <p id="previewSummary"></p>
           </section>
 
 
-          <!-- EXPERIENCE -->
-
-          <section
-            class="resume-section hidden"
-            id="experienceSection"
-          >
-
+          <section id="previewExperienceSection" class="resume-section">
             <h3>EXPERIENCE</h3>
-
             <div id="previewExperience"></div>
-
           </section>
 
 
-          <!-- EDUCATION -->
-
-          <section
-            class="resume-section hidden"
-            id="educationSection"
-          >
-
+          <section id="previewEducationSection" class="resume-section">
             <h3>EDUCATION</h3>
-
             <div id="previewEducation"></div>
-
           </section>
 
 
-          <!-- PROJECTS -->
-
-          <section
-            class="resume-section hidden"
-            id="projectSection"
-          >
-
+          <section id="previewProjectsSection" class="resume-section">
             <h3>PROJECTS</h3>
-
             <div id="previewProjects"></div>
-
           </section>
 
 
-          <!-- SKILLS -->
-
-          <section
-            class="resume-section hidden"
-            id="skillSection"
-          >
-
+          <section id="previewSkillsSection" class="resume-section">
             <h3>SKILLS</h3>
-
-            <div
-              class="resume-skills"
-              id="previewSkills"
-            ></div>
-
+            <div id="previewSkills" class="resume-skills"></div>
           </section>
 
 
-          <!-- CERTIFICATIONS -->
-
-          <section
-            class="resume-section hidden"
-            id="certificationSection"
-          >
-
+          <section id="previewCertificationSection" class="resume-section">
             <h3>CERTIFICATIONS</h3>
-
             <div id="previewCertifications"></div>
-
           </section>
 
 
-          <!-- LANGUAGES -->
-
-          <section
-            class="resume-section hidden"
-            id="languageSection"
-          >
-
+          <section id="previewLanguageSection" class="resume-section">
             <h3>LANGUAGES</h3>
-
-            <div
-              class="resume-languages"
-              id="previewLanguages"
-            ></div>
-
+            <div id="previewLanguages"></div>
           </section>
 
         </article>
 
       </div>
 
-      <div class="pdf-note">
-        <strong>A4 one-page resume</strong>
-        <span>Use “Download PDF” to save the final resume.</span>
-      </div>
-
-    </section>
+    </aside>
 
   </main>
 
-
   <script src="script.js"></script>
-
 </body>
 </html>
