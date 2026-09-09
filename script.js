@@ -1,10 +1,6 @@
-/* =========================================================
-   RESUME BUILDER — SCRIPT
-   ========================================================= */
+const STORAGE_KEY = "resumeBuilderData";
 
-const $ = (id) => document.getElementById(id);
-
-let resume = {
+const resume = {
   personal: {
     name: "",
     title: "",
@@ -24,1029 +20,1312 @@ let resume = {
   experience: [],
   education: [],
   projects: [],
+  skills: [],
   certifications: [],
   languages: [],
-
-  skills: [],
 
   photo: "",
 
   settings: {
     theme: "light",
     template: "classic",
-    accent: "#3157d5"
+    accent: "#2563eb"
   }
 };
 
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
+/* ================= INDIA LOCATION DATA ================= */
 
-const STORAGE_KEY = "professionalResumeBuilder";
+const indiaStates = {
 
-function saveResume() {
+  "Andhra Pradesh": [
+    "Alluri Sitharama Raju",
+    "Anakapalli",
+    "Ananthapuramu",
+    "Annamayya",
+    "Bapatla",
+    "Chittoor",
+    "Dr. B. R. Ambedkar Konaseema",
+    "East Godavari",
+    "Eluru",
+    "Guntur",
+    "Kakinada",
+    "Krishna",
+    "Kurnool",
+    "Nandyal",
+    "Nellore",
+    "Palnadu",
+    "Parvathipuram Manyam",
+    "Prakasam",
+    "Sri Potti Sriramulu Nellore",
+    "Sri Sathya Sai",
+    "Srikakulam",
+    "Tirupati",
+    "Visakhapatnam",
+    "Vizianagaram",
+    "West Godavari"
+  ],
+
+  "Arunachal Pradesh": [
+    "Tawang",
+    "West Kameng",
+    "East Kameng",
+    "Papum Pare",
+    "Kurung Kumey",
+    "Kra Daadi",
+    "Lower Subansiri",
+    "Upper Subansiri",
+    "West Siang",
+    "Siang",
+    "East Siang",
+    "Upper Siang",
+    "Lower Siang",
+    "Lower Dibang Valley",
+    "Dibang Valley",
+    "Anjaw",
+    "Lohit",
+    "Namsai",
+    "Changlang",
+    "Tirap",
+    "Longding"
+  ],
+
+  "Assam": [
+    "Baksa",
+    "Barpeta",
+    "Biswanath",
+    "Bongaigaon",
+    "Cachar",
+    "Charaideo",
+    "Chirang",
+    "Darrang",
+    "Dhemaji",
+    "Dhubri",
+    "Dibrugarh",
+    "Goalpara",
+    "Golaghat",
+    "Hailakandi",
+    "Hojai",
+    "Jorhat",
+    "Kamrup",
+    "Kamrup Metropolitan",
+    "Karbi Anglong",
+    "Karimganj",
+    "Kokrajhar",
+    "Lakhimpur",
+    "Majuli",
+    "Morigaon",
+    "Nagaon",
+    "Nalbari",
+    "Sivasagar",
+    "Sonitpur",
+    "South Salmara-Mankachar",
+    "Tinsukia",
+    "Udalguri",
+    "West Karbi Anglong"
+  ],
+
+  "Bihar": [
+    "Araria",
+    "Arwal",
+    "Aurangabad",
+    "Banka",
+    "Begusarai",
+    "Bhagalpur",
+    "Bhojpur",
+    "Buxar",
+    "Darbhanga",
+    "East Champaran",
+    "Gaya",
+    "Gopalganj",
+    "Jamui",
+    "Jehanabad",
+    "Kaimur",
+    "Katihar",
+    "Khagaria",
+    "Kishanganj",
+    "Lakhisarai",
+    "Madhepura",
+    "Madhubani",
+    "Munger",
+    "Muzaffarpur",
+    "Nalanda",
+    "Nawada",
+    "Patna",
+    "Purnia",
+    "Rohtas",
+    "Saharsa",
+    "Samastipur",
+    "Saran",
+    "Sheikhpura",
+    "Sheohar",
+    "Sitamarhi",
+    "Siwan",
+    "Supaul",
+    "Vaishali",
+    "West Champaran"
+  ],
+
+  "Chhattisgarh": [
+    "Balod",
+    "Baloda Bazar",
+    "Balrampur",
+    "Bastar",
+    "Bemetara",
+    "Bijapur",
+    "Bilaspur",
+    "Dantewada",
+    "Dhamtari",
+    "Durg",
+    "Gariaband",
+    "Gaurela-Pendra-Marwahi",
+    "Janjgir-Champa",
+    "Jashpur",
+    "Kabirdham",
+    "Kanker",
+    "Khairagarh-Chhuikhadan-Gandai",
+    "Kondagaon",
+    "Korba",
+    "Koriya",
+    "Mahasamund",
+    "Manendragarh-Chirmiri-Bharatpur",
+    "Mohla-Manpur-Ambagarh Chowki",
+    "Mungeli",
+    "Narayanpur",
+    "Raigarh",
+    "Raipur",
+    "Rajnandgaon",
+    "Sakti",
+    "Sarangarh-Bilaigarh",
+    "Sukma",
+    "Surajpur",
+    "Surguja"
+  ],
+
+  "Goa": [
+    "North Goa",
+    "South Goa"
+  ],
+
+  "Gujarat": [
+    "Ahmedabad",
+    "Amreli",
+    "Anand",
+    "Aravalli",
+    "Banaskantha",
+    "Bharuch",
+    "Bhavnagar",
+    "Botad",
+    "Chhota Udaipur",
+    "Dahod",
+    "Dang",
+    "Devbhoomi Dwarka",
+    "Gandhinagar",
+    "Gir Somnath",
+    "Jamnagar",
+    "Junagadh",
+    "Kheda",
+    "Kutch",
+    "Mahisagar",
+    "Mehsana",
+    "Morbi",
+    "Narmada",
+    "Navsari",
+    "Panchmahal",
+    "Patan",
+    "Porbandar",
+    "Rajkot",
+    "Sabarkantha",
+    "Surat",
+    "Surendranagar",
+    "Tapi",
+    "Vadodara",
+    "Valsad"
+  ],
+
+  "Haryana": [
+    "Ambala",
+    "Bhiwani",
+    "Charkhi Dadri",
+    "Faridabad",
+    "Fatehabad",
+    "Gurugram",
+    "Hisar",
+    "Jhajjar",
+    "Jind",
+    "Kaithal",
+    "Karnal",
+    "Kurukshetra",
+    "Mahendragarh",
+    "Nuh",
+    "Palwal",
+    "Panchkula",
+    "Panipat",
+    "Rewari",
+    "Rohtak",
+    "Sirsa",
+    "Sonipat",
+    "Yamunanagar"
+  ],
+
+  "Himachal Pradesh": [
+    "Bilaspur",
+    "Chamba",
+    "Hamirpur",
+    "Kangra",
+    "Kinnaur",
+    "Kullu",
+    "Lahaul and Spiti",
+    "Mandi",
+    "Shimla",
+    "Sirmaur",
+    "Solan",
+    "Una"
+  ],
+
+  "Jharkhand": [
+    "Bokaro",
+    "Chatra",
+    "Deoghar",
+    "Dhanbad",
+    "Dumka",
+    "East Singhbhum",
+    "Garhwa",
+    "Giridih",
+    "Godda",
+    "Gumla",
+    "Hazaribagh",
+    "Jamtara",
+    "Khunti",
+    "Koderma",
+    "Latehar",
+    "Lohardaga",
+    "Pakur",
+    "Palamu",
+    "Ramgarh",
+    "Ranchi",
+    "Sahibganj",
+    "Seraikela Kharsawan",
+    "Simdega",
+    "West Singhbhum"
+  ],
+
+  "Karnataka": [
+    "Bagalkot",
+    "Ballari",
+    "Belagavi",
+    "Bengaluru Rural",
+    "Bengaluru Urban",
+    "Bidar",
+    "Chamarajanagar",
+    "Chikkaballapur",
+    "Chikkamagaluru",
+    "Chitradurga",
+    "Dakshina Kannada",
+    "Davanagere",
+    "Dharwad",
+    "Gadag",
+    "Hassan",
+    "Haveri",
+    "Kalaburagi",
+    "Kodagu",
+    "Kolar",
+    "Koppal",
+    "Mandya",
+    "Mysuru",
+    "Raichur",
+    "Ramanagara",
+    "Shivamogga",
+    "Tumakuru",
+    "Udupi",
+    "Uttara Kannada",
+    "Vijayapura",
+    "Yadgir"
+  ],
+
+  "Kerala": [
+    "Alappuzha",
+    "Ernakulam",
+    "Idukki",
+    "Kannur",
+    "Kasaragod",
+    "Kollam",
+    "Kottayam",
+    "Kozhikode",
+    "Malappuram",
+    "Palakkad",
+    "Pathanamthitta",
+    "Thiruvananthapuram",
+    "Thrissur",
+    "Wayanad"
+  ],
+
+  "Madhya Pradesh": [
+    "Agar Malwa",
+    "Alirajpur",
+    "Anuppur",
+    "Ashoknagar",
+    "Balaghat",
+    "Barwani",
+    "Betul",
+    "Bhind",
+    "Bhopal",
+    "Burhanpur",
+    "Chhatarpur",
+    "Chhindwara",
+    "Damoh",
+    "Datia",
+    "Dewas",
+    "Dhar",
+    "Dindori",
+    "Guna",
+    "Gwalior",
+    "Harda",
+    "Hoshangabad",
+    "Indore",
+    "Jabalpur",
+    "Jhabua",
+    "Katni",
+    "Khandwa",
+    "Khargone",
+    "Mandla",
+    "Mandsaur",
+    "Morena",
+    "Narsinghpur",
+    "Neemuch",
+    "Panna",
+    "Raisen",
+    "Rajgarh",
+    "Ratlam",
+    "Rewa",
+    "Sagar",
+    "Satna",
+    "Sehore",
+    "Seoni",
+    "Shahdol",
+    "Shajapur",
+    "Sheopur",
+    "Shivpuri",
+    "Sidhi",
+    "Singrauli",
+    "Tikamgarh",
+    "Ujjain",
+    "Umaria",
+    "Vidisha"
+  ],
+
+  "Maharashtra": [
+    "Ahmednagar",
+    "Akola",
+    "Amravati",
+    "Aurangabad",
+    "Beed",
+    "Bhandara",
+    "Buldhana",
+    "Chandrapur",
+    "Dhule",
+    "Gadchiroli",
+    "Gondia",
+    "Hingoli",
+    "Jalgaon",
+    "Jalna",
+    "Kolhapur",
+    "Latur",
+    "Mumbai City",
+    "Mumbai Suburban",
+    "Nagpur",
+    "Nanded",
+    "Nandurbar",
+    "Nashik",
+    "Osmanabad",
+    "Palghar",
+    "Parbhani",
+    "Pune",
+    "Raigad",
+    "Ratnagiri",
+    "Sangli",
+    "Satara",
+    "Sindhudurg",
+    "Solapur",
+    "Thane",
+    "Wardha",
+    "Washim",
+    "Yavatmal"
+  ],
+
+  "Odisha": [
+    "Angul",
+    "Balangir",
+    "Balasore",
+    "Bargarh",
+    "Bhadrak",
+    "Boudh",
+    "Cuttack",
+    "Deogarh",
+    "Dhenkanal",
+    "Gajapati",
+    "Ganjam",
+    "Jagatsinghpur",
+    "Jajpur",
+    "Jharsuguda",
+    "Kalahandi",
+    "Kandhamal",
+    "Kendrapara",
+    "Kendujhar",
+    "Khordha",
+    "Koraput",
+    "Malkangiri",
+    "Mayurbhanj",
+    "Nabarangpur",
+    "Nayagarh",
+    "Nuapada",
+    "Puri",
+    "Rayagada",
+    "Sambalpur",
+    "Subarnapur",
+    "Sundargarh"
+  ],
+
+  "Punjab": [
+    "Amritsar",
+    "Barnala",
+    "Bathinda",
+    "Faridkot",
+    "Fatehgarh Sahib",
+    "Fazilka",
+    "Ferozepur",
+    "Gurdaspur",
+    "Hoshiarpur",
+    "Jalandhar",
+    "Kapurthala",
+    "Ludhiana",
+    "Malerkotla",
+    "Mansa",
+    "Moga",
+    "Pathankot",
+    "Patiala",
+    "Rupnagar",
+    "Sangrur",
+    "SAS Nagar",
+    "Shaheed Bhagat Singh Nagar",
+    "Sri Muktsar Sahib",
+    "Tarn Taran"
+  ],
+
+  "Rajasthan": [
+    "Ajmer",
+    "Alwar",
+    "Banswara",
+    "Baran",
+    "Barmer",
+    "Bharatpur",
+    "Bhilwara",
+    "Bikaner",
+    "Bundi",
+    "Chittorgarh",
+    "Churu",
+    "Dausa",
+    "Dholpur",
+    "Dungarpur",
+    "Hanumangarh",
+    "Jaipur",
+    "Jaisalmer",
+    "Jalore",
+    "Jhalawar",
+    "Jhunjhunu",
+    "Jodhpur",
+    "Karauli",
+    "Kota",
+    "Nagaur",
+    "Pali",
+    "Pratapgarh",
+    "Rajsamand",
+    "Sawai Madhopur",
+    "Sikar",
+    "Sirohi",
+    "Sri Ganganagar",
+    "Tonk",
+    "Udaipur"
+  ],
+
+  "Tamil Nadu": [
+    "Ariyalur",
+    "Chengalpattu",
+    "Chennai",
+    "Coimbatore",
+    "Cuddalore",
+    "Dharmapuri",
+    "Dindigul",
+    "Erode",
+    "Kallakurichi",
+    "Kancheepuram",
+    "Karur",
+    "Krishnagiri",
+    "Madurai",
+    "Mayiladuthurai",
+    "Nagapattinam",
+    "Namakkal",
+    "Nilgiris",
+    "Perambalur",
+    "Pudukkottai",
+    "Ramanathapuram",
+    "Ranipet",
+    "Salem",
+    "Sivaganga",
+    "Tenkasi",
+    "Thanjavur",
+    "Theni",
+    "Thoothukudi",
+    "Tiruchirappalli",
+    "Tirunelveli",
+    "Tirupathur",
+    "Tiruppur",
+    "Tiruvallur",
+    "Tiruvarur",
+    "Vellore",
+    "Viluppuram",
+    "Virudhunagar"
+  ],
+
+  "Telangana": [
+    "Adilabad",
+    "Bhadradri Kothagudem",
+    "Hyderabad",
+    "Jagtial",
+    "Jangaon",
+    "Jayashankar Bhupalpally",
+    "Jogulamba Gadwal",
+    "Kamareddy",
+    "Karimnagar",
+    "Khammam",
+    "Komaram Bheem",
+    "Mahabubabad",
+    "Mahbubnagar",
+    "Mancherial",
+    "Medak",
+    "Medchal-Malkajgiri",
+    "Mulugu",
+    "Nagarkurnool",
+    "Nalgonda",
+    "Narayanpet",
+    "Nirmal",
+    "Nizamabad",
+    "Peddapalli",
+    "Rajanna Sircilla",
+    "Rangareddy",
+    "Sangareddy",
+    "Siddipet",
+    "Suryapet",
+    "Vikarabad",
+    "Wanaparthy",
+    "Warangal",
+    "Yadadri Bhuvanagiri"
+  ],
+
+  "Uttar Pradesh": [
+    "Agra",
+    "Aligarh",
+    "Ambedkar Nagar",
+    "Amethi",
+    "Amroha",
+    "Auraiya",
+    "Ayodhya",
+    "Azamgarh",
+    "Baghpat",
+    "Bahraich",
+    "Ballia",
+    "Balrampur",
+    "Banda",
+    "Barabanki",
+    "Bareilly",
+    "Basti",
+    "Bhadohi",
+    "Bijnor",
+    "Budaun",
+    "Bulandshahr",
+    "Chandauli",
+    "Chitrakoot",
+    "Deoria",
+    "Etah",
+    "Etawah",
+    "Farrukhabad",
+    "Fatehpur",
+    "Firozabad",
+    "Gautam Buddha Nagar",
+    "Ghaziabad",
+    "Ghazipur",
+    "Gonda",
+    "Gorakhpur",
+    "Hamirpur",
+    "Hapur",
+    "Hardoi",
+    "Hathras",
+    "Jalaun",
+    "Jaunpur",
+    "Jhansi",
+    "Kannauj",
+    "Kanpur Dehat",
+    "Kanpur Nagar",
+    "Kasganj",
+    "Kaushambi",
+    "Kushinagar",
+    "Lakhimpur Kheri",
+    "Lalitpur",
+    "Lucknow",
+    "Maharajganj",
+    "Mahoba",
+    "Mainpuri",
+    "Mathura",
+    "Mau",
+    "Meerut",
+    "Mirzapur",
+    "Moradabad",
+    "Muzaffarnagar",
+    "Pilibhit",
+    "Pratapgarh",
+    "Prayagraj",
+    "Raebareli",
+    "Rampur",
+    "Saharanpur",
+    "Sambhal",
+    "Sant Kabir Nagar",
+    "Shahjahanpur",
+    "Shamli",
+    "Shravasti",
+    "Siddharthnagar",
+    "Sitapur",
+    "Sonbhadra",
+    "Sultanpur",
+    "Unnao",
+    "Varanasi"
+  ],
+
+  "Uttarakhand": [
+    "Almora",
+    "Bageshwar",
+    "Chamoli",
+    "Champawat",
+    "Dehradun",
+    "Haridwar",
+    "Nainital",
+    "Pauri Garhwal",
+    "Pithoragarh",
+    "Rudraprayag",
+    "Tehri Garhwal",
+    "Udham Singh Nagar",
+    "Uttarkashi"
+  ],
+
+  "West Bengal": [
+    "Alipurduar",
+    "Bankura",
+    "Paschim Bardhaman",
+    "Purba Bardhaman",
+    "Birbhum",
+    "Cooch Behar",
+    "Dakshin Dinajpur",
+    "Darjeeling",
+    "Hooghly",
+    "Howrah",
+    "Jalpaiguri",
+    "Jhargram",
+    "Kalimpong",
+    "Kolkata",
+    "Maldah",
+    "Murshidabad",
+    "Nadia",
+    "North 24 Parganas",
+    "South 24 Parganas",
+    "Paschim Medinipur",
+    "Purba Medinipur",
+    "Uttar Dinajpur"
+  ]
+};
+
+
+/* ================= HELPERS ================= */
+
+function $(id) {
+  return document.getElementById(id);
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(resume));
 }
 
-function loadResume() {
-
+function load() {
   const saved = localStorage.getItem(STORAGE_KEY);
 
   if (!saved) return;
 
   try {
-
     const data = JSON.parse(saved);
 
-    resume = {
-      ...resume,
-      ...data,
+    Object.assign(resume.personal, data.personal || {});
 
-      personal: {
-        ...resume.personal,
-        ...(data.personal || {})
-      },
+    resume.summary = data.summary || "";
 
-      settings: {
-        ...resume.settings,
-        ...(data.settings || {})
-      }
-    };
+    resume.experience = data.experience || [];
+    resume.education = data.education || [];
+    resume.projects = data.projects || [];
+    resume.skills = data.skills || [];
+    resume.certifications = data.certifications || [];
+    resume.languages = data.languages || [];
 
-  } catch (error) {
+    resume.photo = data.photo || "";
 
-    console.warn("Could not load saved resume.");
+    Object.assign(
+      resume.settings,
+      data.settings || {}
+    );
 
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
   }
 }
 
 
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
+/* ================= PERSONAL ================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+const personalFields = [
+  "name",
+  "title",
+  "email",
+  "phone",
+  "country",
+  "state",
+  "district",
+  "city",
+  "address",
+  "linkedin",
+  "github"
+];
 
-  loadResume();
+personalFields.forEach(id => {
 
-  fillInputs();
+  $(id).addEventListener("input", () => {
 
-  renderAll();
+    resume.personal[id] = $(id).value;
 
-  setupEvents();
+    if (id === "state") {
+      updateDistricts();
+    }
 
-  applyTheme();
+    save();
+    updatePreview();
+  });
 
-  applyTemplate();
+  $(id).addEventListener("change", () => {
 
-  applyAccent();
+    resume.personal[id] = $(id).value;
 
+    if (id === "state") {
+      updateDistricts();
+    }
+
+    save();
+    updatePreview();
+  });
 });
 
 
-/* =========================================================
-   INPUT HELPERS
-   ========================================================= */
-
-function setValue(id, value) {
-
-  const element = $(id);
-
-  if (element) {
-    element.value = value || "";
-  }
-
-}
-
-
-function fillInputs() {
-
-  const p = resume.personal;
-
-  setValue("name", p.name);
-  setValue("title", p.title);
-  setValue("email", p.email);
-  setValue("phone", p.phone);
-
-  setValue("country", p.country);
-  setValue("state", p.state);
-  setValue("district", p.district);
-
-  setValue("city", p.city);
-  setValue("address", p.address);
-
-  setValue("linkedin", p.linkedin);
-  setValue("github", p.github);
-
-  setValue("summary", resume.summary);
-
-  if (resume.photo) {
-
-    $("photoPreview").innerHTML =
-      `<img src="${resume.photo}" alt="Profile photo">`;
-
-  }
-}
-
-
-/* =========================================================
-   EVENTS
-   ========================================================= */
-
-function setupEvents() {
-
-  const personalFields = [
-    "name",
-    "title",
-    "email",
-    "phone",
-    "country",
-    "state",
-    "district",
-    "city",
-    "address",
-    "linkedin",
-    "github"
-  ];
-
-
-  personalFields.forEach(id => {
-
-    const element = $(id);
-
-    if (!element) return;
-
-    element.addEventListener("input", () => {
-
-      resume.personal[id] = element.value;
-
-      updatePreview();
-      saveResume();
-
-    });
-
-    element.addEventListener("change", () => {
-
-      resume.personal[id] = element.value;
-
-      updatePreview();
-      saveResume();
-
-    });
-
-  });
-
-
-  $("summary").addEventListener("input", () => {
-
-    resume.summary = $("summary").value;
-
-    updatePreview();
-    saveResume();
-
-  });
-
-
-  /* Theme */
-
-  $("themeBtn").addEventListener("click", () => {
-
-    resume.settings.theme =
-      resume.settings.theme === "light"
-        ? "dark"
-        : "light";
-
-    applyTheme();
-    saveResume();
-
-  });
-
-
-  /* Template */
-
-  $("templateSelect").addEventListener("change", () => {
-
-    resume.settings.template =
-      $("templateSelect").value;
-
-    applyTemplate();
-    saveResume();
-
-  });
-
-
-  /* Accent */
-
-  $("accentColor").addEventListener("input", () => {
-
-    resume.settings.accent =
-      $("accentColor").value;
-
-    applyAccent();
-    saveResume();
-
-  });
-
-
-  /* Photo */
-
-  $("photoInput").addEventListener("change", handlePhoto);
-
-
-  /* Clear */
-
-  $("clearBtn").addEventListener("click", clearResume);
-
-}
-
-
-/* =========================================================
-   PHOTO
-   ========================================================= */
-
-function handlePhoto(event) {
-
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function () {
-
-    resume.photo = reader.result;
-
-    $("photoPreview").innerHTML =
-      `<img src="${resume.photo}" alt="Profile photo">`;
-
-    saveResume();
-
-    updatePreview();
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-
-/* =========================================================
-   EXPERIENCE
-   ========================================================= */
-
-function addExperience(data = {}) {
-
-  resume.experience.push({
-
-    id: Date.now(),
-
-    role: data.role || "",
-    company: data.company || "",
-    type: data.type || "Full-time",
-    location: data.location || "",
-
-    start: data.start || "",
-    end: data.end || "",
-
-    description: data.description || ""
-
-  });
-
-  renderExperience();
-
+$("summary").addEventListener("input", e => {
+  resume.summary = e.target.value;
+  save();
   updatePreview();
+});
 
-  saveResume();
 
+/* ================= COUNTRY / STATE / DISTRICT ================= */
+
+$("country").addEventListener("change", () => {
+
+  resume.personal.country = $("country").value;
+
+  if ($("country").value === "India") {
+    populateStates();
+  } else {
+    $("state").innerHTML =
+      `<option value="">Select state / province</option>`;
+
+    $("district").innerHTML =
+      `<option value="">Select district</option>`;
+  }
+
+  resume.personal.state = "";
+  resume.personal.district = "";
+
+  save();
+  updatePreview();
+});
+
+
+function populateStates() {
+
+  const stateSelect = $("state");
+
+  stateSelect.innerHTML =
+    `<option value="">Select state / province</option>`;
+
+  Object.keys(indiaStates)
+    .sort()
+    .forEach(state => {
+
+      const option = document.createElement("option");
+
+      option.value = state;
+      option.textContent = state;
+
+      stateSelect.appendChild(option);
+    });
+
+  stateSelect.value = resume.personal.state || "";
+
+  updateDistricts();
 }
 
 
-function renderExperience() {
+function updateDistricts() {
 
-  const container = $("experienceList");
+  const districtSelect = $("district");
 
-  container.innerHTML = "";
+  districtSelect.innerHTML =
+    `<option value="">Select district</option>`;
 
-  resume.experience.forEach((item, index) => {
+  const state = $("state").value;
 
-    const div = document.createElement("div");
+  if (!state || !indiaStates[state]) {
+    return;
+  }
 
-    div.className = "entry";
+  indiaStates[state]
+    .sort()
+    .forEach(district => {
 
-    div.innerHTML = `
+      const option = document.createElement("option");
 
-      <button
-        class="entry-remove"
-        onclick="removeExperience(${index})"
-        title="Remove"
-      >×</button>
+      option.value = district;
+      option.textContent = district;
 
-      <div class="grid two">
+      districtSelect.appendChild(option);
+    });
+
+  districtSelect.value =
+    resume.personal.district || "";
+
+  resume.personal.state = state;
+}
+
+
+/* ================= DYNAMIC FORM ================= */
+
+function createDynamicItem(type, index, data = {}) {
+
+  const item = document.createElement("div");
+
+  item.className = "dynamic-item";
+
+  if (type === "experience") {
+
+    item.innerHTML = `
+      <button type="button" class="remove-btn">
+        Remove
+      </button>
+
+      <div class="dynamic-item-grid">
 
         <div class="field">
           <label>Job Title</label>
-          <input
-            value="${escapeAttr(item.role)}"
-            oninput="updateExperience(${index}, 'role', this.value)"
-            placeholder="e.g. Software Developer"
-          >
+          <input data-field="jobTitle" value="${escapeHTML(data.jobTitle)}">
         </div>
 
         <div class="field">
           <label>Company</label>
-          <input
-            value="${escapeAttr(item.company)}"
-            oninput="updateExperience(${index}, 'company', this.value)"
-            placeholder="Company name"
-          >
+          <input data-field="company" value="${escapeHTML(data.company)}">
         </div>
 
         <div class="field">
           <label>Employment Type</label>
-
-          <select
-            onchange="updateExperience(${index}, 'type', this.value)"
-          >
-
-            ${option("Full-time", item.type)}
-            ${option("Part-time", item.type)}
-            ${option("Internship", item.type)}
-            ${option("Freelance", item.type)}
-            ${option("Contract", item.type)}
-
+          <select data-field="employmentType">
+            <option value="">Select employment type</option>
+            <option>Full-time</option>
+            <option>Part-time</option>
+            <option>Internship</option>
+            <option>Contract</option>
+            <option>Freelance</option>
           </select>
         </div>
 
         <div class="field">
           <label>Location</label>
-          <input
-            value="${escapeAttr(item.location)}"
-            oninput="updateExperience(${index}, 'location', this.value)"
-            placeholder="City, Country"
-          >
+          <input data-field="location" value="${escapeHTML(data.location)}">
         </div>
 
         <div class="field">
           <label>Start Date</label>
-          <input
-            type="month"
-            value="${item.start}"
-            onchange="updateExperience(${index}, 'start', this.value)"
-          >
+          <input type="month" data-field="start" value="${escapeHTML(data.start)}">
         </div>
 
         <div class="field">
           <label>End Date</label>
-          <input
-            type="month"
-            value="${item.end}"
-            onchange="updateExperience(${index}, 'end', this.value)"
-          >
+          <input type="month" data-field="end" value="${escapeHTML(data.end)}">
+        </div>
+
+        <div class="field full">
+          <label>Description</label>
+          <textarea data-field="description">${escapeHTML(data.description)}</textarea>
         </div>
 
       </div>
+    `;
+  }
 
-      <div class="field">
 
-        <label>Description</label>
+  if (type === "education") {
 
-        <textarea
-          rows="4"
-          oninput="updateExperience(${index}, 'description', this.value)"
-          placeholder="Describe your responsibilities and achievements."
-        >${escapeHTML(item.description)}</textarea>
+    item.innerHTML = `
+      <button type="button" class="remove-btn">
+        Remove
+      </button>
+
+      <div class="dynamic-item-grid">
+
+        <div class="field">
+          <label>Degree</label>
+          <select data-field="degree">
+            <option value="">Select degree</option>
+            <option>High School</option>
+            <option>Diploma</option>
+            <option>Associate Degree</option>
+            <option>Bachelor's Degree</option>
+            <option>Master's Degree</option>
+            <option>Doctorate</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Field of Study</label>
+          <input data-field="field" value="${escapeHTML(data.field)}">
+        </div>
+
+        <div class="field">
+          <label>Institution</label>
+          <input data-field="institution" value="${escapeHTML(data.institution)}">
+        </div>
+
+        <div class="field">
+          <label>Location</label>
+          <input data-field="location" value="${escapeHTML(data.location)}">
+        </div>
+
+        <div class="field">
+          <label>Start Date</label>
+          <input type="month" data-field="start" value="${escapeHTML(data.start)}">
+        </div>
+
+        <div class="field">
+          <label>End Date</label>
+          <input type="month" data-field="end" value="${escapeHTML(data.end)}">
+        </div>
+
+        <div class="field full">
+          <label>Additional Details</label>
+          <textarea data-field="description">${escapeHTML(data.description)}</textarea>
+        </div>
 
       </div>
-
     `;
+  }
 
-    container.appendChild(div);
+
+  if (type === "project") {
+
+    item.innerHTML = `
+      <button type="button" class="remove-btn">
+        Remove
+      </button>
+
+      <div class="dynamic-item-grid">
+
+        <div class="field">
+          <label>Project Name</label>
+          <input data-field="name" value="${escapeHTML(data.name)}">
+        </div>
+
+        <div class="field">
+          <label>Project Link</label>
+          <input data-field="link" value="${escapeHTML(data.link)}">
+        </div>
+
+        <div class="field full">
+          <label>Description</label>
+          <textarea data-field="description">${escapeHTML(data.description)}</textarea>
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  if (type === "certification") {
+
+    item.innerHTML = `
+      <button type="button" class="remove-btn">
+        Remove
+      </button>
+
+      <div class="dynamic-item-grid">
+
+        <div class="field">
+          <label>Certification Name</label>
+          <input data-field="name" value="${escapeHTML(data.name)}">
+        </div>
+
+        <div class="field">
+          <label>Issuing Organization</label>
+          <input data-field="organization" value="${escapeHTML(data.organization)}">
+        </div>
+
+        <div class="field">
+          <label>Issue Date</label>
+          <input type="month" data-field="date" value="${escapeHTML(data.date)}">
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  if (type === "language") {
+
+    item.innerHTML = `
+      <button type="button" class="remove-btn">
+        Remove
+      </button>
+
+      <div class="dynamic-item-grid">
+
+        <div class="field">
+          <label>Language</label>
+          <input data-field="language" value="${escapeHTML(data.language)}">
+        </div>
+
+        <div class="field">
+          <label>Proficiency</label>
+          <select data-field="proficiency">
+            <option value="">Select proficiency</option>
+            <option>Beginner</option>
+            <option>Intermediate</option>
+            <option>Advanced</option>
+            <option>Fluent</option>
+            <option>Native</option>
+          </select>
+        </div>
+
+      </div>
+    `;
+  }
+
+
+  item.dataset.index = index;
+
+  item.querySelectorAll("[data-field]").forEach(input => {
+
+    const field = input.dataset.field;
+
+    if (
+      input.tagName === "SELECT" &&
+      data[field]
+    ) {
+      input.value = data[field];
+    }
+
+    input.addEventListener("input", () => {
+
+      updateDynamicData(type, index, field, input.value);
+
+    });
+
+    input.addEventListener("change", () => {
+
+      updateDynamicData(type, index, field, input.value);
+
+    });
 
   });
 
+
+  item.querySelector(".remove-btn").addEventListener("click", () => {
+
+    resume[type] = resume[type].filter(
+      (_, i) => i !== index
+    );
+
+    renderDynamic(type);
+    save();
+    updatePreview();
+
+  });
+
+
+  return item;
 }
 
 
-function updateExperience(index, key, value) {
+function updateDynamicData(type, index, field, value) {
 
-  resume.experience[index][key] = value;
+  if (!resume[type][index]) return;
 
+  resume[type][index][field] = value;
+
+  save();
   updatePreview();
-
-  saveResume();
-
 }
 
 
-function removeExperience(index) {
+function renderDynamic(type) {
 
-  resume.experience.splice(index, 1);
+  const map = {
+    experience: "experienceList",
+    education: "educationList",
+    project: "projectList",
+    certification: "certificationList",
+    language: "languageList"
+  };
 
-  renderExperience();
+  const container = $(map[type]);
 
-  updatePreview();
+  container.innerHTML = "";
 
-  saveResume();
+  if (!resume[type].length) {
 
+    container.innerHTML =
+      `<div class="empty-message">No entries added.</div>`;
+
+    return;
+  }
+
+  resume[type].forEach((item, index) => {
+
+    container.appendChild(
+      createDynamicItem(type, index, item)
+    );
+
+  });
 }
 
 
-/* =========================================================
-   EDUCATION
-   ========================================================= */
+/* ================= ADD BUTTONS ================= */
 
-function addEducation(data = {}) {
+$("addExperience").addEventListener("click", () => {
+
+  resume.experience.push({
+    jobTitle: "",
+    company: "",
+    employmentType: "",
+    location: "",
+    start: "",
+    end: "",
+    description: ""
+  });
+
+  renderDynamic("experience");
+  save();
+});
+
+
+$("addEducation").addEventListener("click", () => {
 
   resume.education.push({
-
-    id: Date.now(),
-
-    degree: data.degree || "",
-    institution: data.institution || "",
-    location: data.location || "",
-
-    start: data.start || "",
-    end: data.end || "",
-
-    grade: data.grade || "",
-    description: data.description || ""
-
+    degree: "",
+    field: "",
+    institution: "",
+    location: "",
+    start: "",
+    end: "",
+    description: ""
   });
 
-  renderEducation();
+  renderDynamic("education");
+  save();
+});
 
-  updatePreview();
 
-  saveResume();
-
-}
-
-
-function renderEducation() {
-
-  const container = $("educationList");
-
-  container.innerHTML = "";
-
-  resume.education.forEach((item, index) => {
-
-    const div = document.createElement("div");
-
-    div.className = "entry";
-
-    div.innerHTML = `
-
-      <button
-        class="entry-remove"
-        onclick="removeEducation(${index})"
-      >×</button>
-
-      <div class="grid two">
-
-        <div class="field">
-
-          <label>Qualification</label>
-
-          <select
-            onchange="updateEducation(${index}, 'degree', this.value)"
-          >
-
-            ${option("Bachelor's Degree", item.degree)}
-            ${option("Master's Degree", item.degree)}
-            ${option("Diploma", item.degree)}
-            ${option("Doctorate", item.degree)}
-            ${option("Higher Secondary", item.degree)}
-            ${option("Other", item.degree)}
-
-          </select>
-
-        </div>
-
-        <div class="field">
-
-          <label>Institution</label>
-
-          <input
-            value="${escapeAttr(item.institution)}"
-            oninput="updateEducation(${index}, 'institution', this.value)"
-            placeholder="University / College / School"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Location</label>
-
-          <input
-            value="${escapeAttr(item.location)}"
-            oninput="updateEducation(${index}, 'location', this.value)"
-            placeholder="City, Country"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Grade / CGPA</label>
-
-          <input
-            value="${escapeAttr(item.grade)}"
-            oninput="updateEducation(${index}, 'grade', this.value)"
-            placeholder="e.g. 8.7 CGPA"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Start Date</label>
-
-          <input
-            type="month"
-            value="${item.start}"
-            onchange="updateEducation(${index}, 'start', this.value)"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>End Date</label>
-
-          <input
-            type="month"
-            value="${item.end}"
-            onchange="updateEducation(${index}, 'end', this.value)"
-          >
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>Description</label>
-
-        <textarea
-          rows="3"
-          oninput="updateEducation(${index}, 'description', this.value)"
-          placeholder="Relevant coursework, achievements or academic details."
-        >${escapeHTML(item.description)}</textarea>
-
-      </div>
-
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-function updateEducation(index, key, value) {
-
-  resume.education[index][key] = value;
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-function removeEducation(index) {
-
-  resume.education.splice(index, 1);
-
-  renderEducation();
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-/* =========================================================
-   PROJECTS
-   ========================================================= */
-
-function addProject(data = {}) {
+$("addProject").addEventListener("click", () => {
 
   resume.projects.push({
-
-    id: Date.now(),
-
-    name: data.name || "",
-    technologies: data.technologies || "",
-    link: data.link || "",
-    github: data.github || "",
-    description: data.description || ""
-
+    name: "",
+    link: "",
+    description: ""
   });
 
-  renderProjects();
-
-  updatePreview();
-
-  saveResume();
-
-}
+  renderDynamic("project");
+  save();
+});
 
 
-function renderProjects() {
-
-  const container = $("projectList");
-
-  container.innerHTML = "";
-
-  resume.projects.forEach((item, index) => {
-
-    const div = document.createElement("div");
-
-    div.className = "entry";
-
-    div.innerHTML = `
-
-      <button
-        class="entry-remove"
-        onclick="removeProject(${index})"
-      >×</button>
-
-      <div class="grid two">
-
-        <div class="field">
-
-          <label>Project Name</label>
-
-          <input
-            value="${escapeAttr(item.name)}"
-            oninput="updateProject(${index}, 'name', this.value)"
-            placeholder="e.g. Smart Attendance System"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Technologies / Tools</label>
-
-          <input
-            value="${escapeAttr(item.technologies)}"
-            oninput="updateProject(${index}, 'technologies', this.value)"
-            placeholder="HTML, CSS, JavaScript"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Project Link</label>
-
-          <input
-            value="${escapeAttr(item.link)}"
-            oninput="updateProject(${index}, 'link', this.value)"
-            placeholder="https://..."
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>GitHub</label>
-
-          <input
-            value="${escapeAttr(item.github)}"
-            oninput="updateProject(${index}, 'github', this.value)"
-            placeholder="https://github.com/..."
-          >
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>Description</label>
-
-        <textarea
-          rows="3"
-          oninput="updateProject(${index}, 'description', this.value)"
-          placeholder="Explain what you built and what problem it solves."
-        >${escapeHTML(item.description)}</textarea>
-
-      </div>
-
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-function updateProject(index, key, value) {
-
-  resume.projects[index][key] = value;
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-function removeProject(index) {
-
-  resume.projects.splice(index, 1);
-
-  renderProjects();
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-/* =========================================================
-   CERTIFICATIONS
-   ========================================================= */
-
-function addCertification(data = {}) {
+$("addCertification").addEventListener("click", () => {
 
   resume.certifications.push({
-
-    id: Date.now(),
-
-    name: data.name || "",
-    issuer: data.issuer || "",
-    date: data.date || "",
-    credential: data.credential || ""
-
+    name: "",
+    organization: "",
+    date: ""
   });
 
-  renderCertifications();
-
-  updatePreview();
-
-  saveResume();
-
-}
+  renderDynamic("certification");
+  save();
+});
 
 
-function renderCertifications() {
-
-  const container = $("certificationList");
-
-  container.innerHTML = "";
-
-  resume.certifications.forEach((item, index) => {
-
-    const div = document.createElement("div");
-
-    div.className = "entry";
-
-    div.innerHTML = `
-
-      <button
-        class="entry-remove"
-        onclick="removeCertification(${index})"
-      >×</button>
-
-      <div class="grid two">
-
-        <div class="field">
-
-          <label>Certification</label>
-
-          <input
-            value="${escapeAttr(item.name)}"
-            oninput="updateCertification(${index}, 'name', this.value)"
-            placeholder="Certification name"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Issuing Organization</label>
-
-          <input
-            value="${escapeAttr(item.issuer)}"
-            oninput="updateCertification(${index}, 'issuer', this.value)"
-            placeholder="Organization"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Date</label>
-
-          <input
-            type="month"
-            value="${item.date}"
-            onchange="updateCertification(${index}, 'date', this.value)"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Credential ID / Link</label>
-
-          <input
-            value="${escapeAttr(item.credential)}"
-            oninput="updateCertification(${index}, 'credential', this.value)"
-            placeholder="Optional"
-          >
-
-        </div>
-
-      </div>
-
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-function updateCertification(index, key, value) {
-
-  resume.certifications[index][key] = value;
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-function removeCertification(index) {
-
-  resume.certifications.splice(index, 1);
-
-  renderCertifications();
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-/* =========================================================
-   LANGUAGES
-   ========================================================= */
-
-function addLanguage(data = {}) {
+$("addLanguage").addEventListener("click", () => {
 
   resume.languages.push({
-
-    id: Date.now(),
-
-    language: data.language || "",
-    proficiency: data.proficiency || "Professional"
-
+    language: "",
+    proficiency: ""
   });
 
-  renderLanguages();
-
-  updatePreview();
-
-  saveResume();
-
-}
+  renderDynamic("language");
+  save();
+});
 
 
-function renderLanguages() {
+/* ================= SKILLS ================= */
 
-  const container = $("languageList");
+$("addSkill").addEventListener("click", addSkill);
 
-  container.innerHTML = "";
+$("skillInput").addEventListener("keydown", e => {
 
-  resume.languages.forEach((item, index) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addSkill();
+  }
 
-    const div = document.createElement("div");
+});
 
-    div.className = "entry";
-
-    div.innerHTML = `
-
-      <button
-        class="entry-remove"
-        onclick="removeLanguage(${index})"
-      >×</button>
-
-      <div class="grid two">
-
-        <div class="field">
-
-          <label>Language</label>
-
-          <input
-            value="${escapeAttr(item.language)}"
-            oninput="updateLanguage(${index}, 'language', this.value)"
-            placeholder="e.g. English"
-          >
-
-        </div>
-
-        <div class="field">
-
-          <label>Proficiency</label>
-
-          <select
-            onchange="updateLanguage(${index}, 'proficiency', this.value)"
-          >
-
-            ${option("Native", item.proficiency)}
-            ${option("Fluent", item.proficiency)}
-            ${option("Professional", item.proficiency)}
-            ${option("Intermediate", item.proficiency)}
-            ${option("Basic", item.proficiency)}
-
-          </select>
-
-        </div>
-
-      </div>
-
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-function updateLanguage(index, key, value) {
-
-  resume.languages[index][key] = value;
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-function removeLanguage(index) {
-
-  resume.languages.splice(index, 1);
-
-  renderLanguages();
-
-  updatePreview();
-
-  saveResume();
-
-}
-
-
-/* =========================================================
-   SKILLS
-   ========================================================= */
 
 function addSkill() {
 
-  const input = $("skillInput");
-
-  const value = input.value.trim();
+  const value = $("skillInput").value.trim();
 
   if (!value) return;
 
-  if (
-    resume.skills.some(
-      skill => skill.toLowerCase() === value.toLowerCase()
-    )
-  ) {
-
-    input.value = "";
-
-    return;
-
-  }
-
   resume.skills.push(value);
 
-  input.value = "";
+  $("skillInput").value = "";
 
   renderSkills();
-
+  save();
   updatePreview();
-
-  saveResume();
-
 }
 
 
@@ -1063,84 +1342,60 @@ function renderSkills() {
     tag.className = "skill-tag";
 
     tag.innerHTML = `
-
       <span>${escapeHTML(skill)}</span>
-
-      <button
-        onclick="removeSkill(${index})"
-        title="Remove skill"
-      >×</button>
-
+      <button type="button">×</button>
     `;
 
+    tag.querySelector("button").addEventListener("click", () => {
+
+      resume.skills.splice(index, 1);
+
+      renderSkills();
+      save();
+      updatePreview();
+
+    });
+
     container.appendChild(tag);
-
   });
-
 }
 
 
-function removeSkill(index) {
+/* ================= PHOTO ================= */
 
-  resume.skills.splice(index, 1);
+$("photo").addEventListener("change", e => {
 
-  renderSkills();
+  const file = e.target.files[0];
 
-  updatePreview();
+  if (!file) return;
 
-  saveResume();
+  const reader = new FileReader();
 
-}
+  reader.onload = () => {
 
+    resume.photo = reader.result;
 
-/* =========================================================
-   RENDER ALL
-   ========================================================= */
+    save();
+    updatePreview();
 
-function renderAll() {
+  };
 
-  renderExperience();
-
-  renderEducation();
-
-  renderProjects();
-
-  renderCertifications();
-
-  renderLanguages();
-
-  renderSkills();
-
-}
+  reader.readAsDataURL(file);
+});
 
 
-/* =========================================================
-   PREVIEW
-   ========================================================= */
+/* ================= PREVIEW ================= */
 
 function updatePreview() {
 
   const p = resume.personal;
 
-
-  /* Name */
-
-  $("previewName").textContent =
-    p.name || "Your Name";
-
-
-  /* Title */
-
-  $("previewTitle").textContent =
-    p.title || "Professional Title";
-
-
-  /* Contact */
+  $("previewName").textContent = p.name;
+  $("previewTitle").textContent = p.title;
 
   const contact = [];
 
   if (p.email) contact.push(p.email);
-
   if (p.phone) contact.push(p.phone);
 
   const location = [
@@ -1151,89 +1406,78 @@ function updatePreview() {
   ].filter(Boolean).join(", ");
 
   if (location) contact.push(location);
+  if (p.linkedin) contact.push(p.linkedin);
+  if (p.github) contact.push(p.github);
 
-  if (p.address) contact.push(p.address);
+  $("previewContact").innerHTML =
+    contact
+      .map(value => `<span>${escapeHTML(value)}</span>`)
+      .join("");
 
-  $("previewContact").textContent =
-    contact.length
-      ? contact.join("  •  ")
-      : "email@example.com";
-
-
-  /* Links */
-
-  const links = [];
-
-  if (p.linkedin) {
-
-    links.push(
-      `<a href="${safeURL(p.linkedin)}" target="_blank">
-        LinkedIn
-      </a>`
-    );
-
-  }
-
-  if (p.github) {
-
-    links.push(
-      `<a href="${safeURL(p.github)}" target="_blank">
-        GitHub
-      </a>`
-    );
-
-  }
-
-  $("previewLinks").innerHTML =
-    links.join("  •  ");
-
-
-  /* Summary */
 
   $("previewSummary").textContent =
-    resume.summary ||
-    "Your professional summary will appear here.";
-
+    resume.summary;
 
   toggleSection(
-    "summarySection",
-    Boolean(resume.summary.trim())
+    "previewSummarySection",
+    !!resume.summary.trim()
   );
 
 
   renderExperiencePreview();
-
   renderEducationPreview();
-
   renderProjectPreview();
-
-  renderSkillPreview();
-
   renderCertificationPreview();
-
   renderLanguagePreview();
 
 
-  /* Photo */
+  $("previewSkills").innerHTML =
+    resume.skills
+      .map(skill =>
+        `<span class="resume-skill">${escapeHTML(skill)}</span>`
+      )
+      .join("");
+
+  toggleSection(
+    "previewSkillsSection",
+    resume.skills.length > 0
+  );
+
+
+  const photo = $("previewPhoto");
 
   if (resume.photo) {
 
-    $("previewPhoto").src = resume.photo;
-
-    $("previewPhoto").style.display = "block";
+    photo.src = resume.photo;
+    photo.classList.add("has-photo");
 
   } else {
 
-    $("previewPhoto").style.display = "none";
+    photo.removeAttribute("src");
+    photo.classList.remove("has-photo");
 
   }
 
+
+  $("resumePreview").className =
+    `resume-page ${resume.settings.template}`;
+
+  $("resumePreview").style
+    .setProperty(
+      "--resume-accent",
+      resume.settings.accent
+    );
 }
 
 
-/* =========================================================
-   EXPERIENCE PREVIEW
-   ========================================================= */
+function toggleSection(id, show) {
+
+  $(id).style.display =
+    show ? "block" : "none";
+}
+
+
+/* ================= PREVIEW ENTRIES ================= */
 
 function renderExperiencePreview() {
 
@@ -1241,67 +1485,50 @@ function renderExperiencePreview() {
 
   container.innerHTML = "";
 
-  const valid = resume.experience.filter(
-    item => item.role || item.company
-  );
+  resume.experience.forEach(item => {
 
+    if (
+      !item.jobTitle &&
+      !item.company &&
+      !item.description
+    ) return;
 
-  valid.forEach(item => {
+    container.innerHTML += `
+      <div class="resume-entry">
 
-    const div = document.createElement("div");
+        <div class="entry-top">
 
-    div.className = "resume-entry";
+          <div>
+            <div class="entry-title">
+              ${escapeHTML(item.jobTitle)}
+            </div>
 
-    div.innerHTML = `
+            <div class="entry-subtitle">
+              ${escapeHTML(item.company)}
+              ${item.location ? " · " + escapeHTML(item.location) : ""}
+            </div>
+          </div>
 
-      <div class="resume-entry-top">
+          <div class="entry-date">
+            ${formatDateRange(item.start, item.end)}
+          </div>
 
-        <div class="resume-entry-title">
-          ${escapeHTML(item.role)}
         </div>
 
-        <div class="resume-entry-date">
-          ${dateRange(item.start, item.end)}
+        <div class="entry-description">
+          ${formatText(item.description)}
         </div>
 
       </div>
-
-      <div class="resume-entry-company">
-
-        ${escapeHTML(item.company)}
-
-        ${item.type ? ` • ${escapeHTML(item.type)}` : ""}
-
-        ${item.location ? ` • ${escapeHTML(item.location)}` : ""}
-
-      </div>
-
-      ${
-        item.description
-          ? `<div class="resume-entry-description">
-              ${formatDescription(item.description)}
-             </div>`
-          : ""
-      }
-
     `;
-
-    container.appendChild(div);
-
   });
 
-
   toggleSection(
-    "experienceSection",
-    valid.length > 0
+    "previewExperienceSection",
+    container.innerHTML.trim() !== ""
   );
-
 }
 
-
-/* =========================================================
-   EDUCATION PREVIEW
-   ========================================================= */
 
 function renderEducationPreview() {
 
@@ -1309,76 +1536,56 @@ function renderEducationPreview() {
 
   container.innerHTML = "";
 
-  const valid = resume.education.filter(
-    item => item.degree || item.institution
-  );
+  resume.education.forEach(item => {
 
+    if (
+      !item.degree &&
+      !item.field &&
+      !item.institution
+    ) return;
 
-  valid.forEach(item => {
+    container.innerHTML += `
+      <div class="resume-entry">
 
-    const div = document.createElement("div");
+        <div class="entry-top">
 
-    div.className = "resume-entry";
+          <div>
 
-    div.innerHTML = `
+            <div class="entry-title">
+              ${escapeHTML(
+                [item.degree, item.field]
+                  .filter(Boolean)
+                  .join(" — ")
+              )}
+            </div>
 
-      <div class="resume-entry-top">
+            <div class="entry-subtitle">
+              ${escapeHTML(item.institution)}
+              ${item.location ? " · " + escapeHTML(item.location) : ""}
+            </div>
 
-        <div class="resume-entry-title">
-          ${escapeHTML(item.degree)}
+          </div>
+
+          <div class="entry-date">
+            ${formatDateRange(item.start, item.end)}
+          </div>
+
         </div>
 
-        <div class="resume-entry-date">
-          ${dateRange(item.start, item.end)}
+        <div class="entry-description">
+          ${formatText(item.description)}
         </div>
 
       </div>
-
-      <div class="resume-entry-company">
-
-        ${escapeHTML(item.institution)}
-
-        ${item.location
-          ? ` • ${escapeHTML(item.location)}`
-          : ""
-        }
-
-      </div>
-
-      ${
-        item.grade
-          ? `<div class="resume-entry-description">
-              <strong>Grade:</strong> ${escapeHTML(item.grade)}
-             </div>`
-          : ""
-      }
-
-      ${
-        item.description
-          ? `<div class="resume-entry-description">
-              ${formatDescription(item.description)}
-             </div>`
-          : ""
-      }
-
     `;
-
-    container.appendChild(div);
-
   });
 
-
   toggleSection(
-    "educationSection",
-    valid.length > 0
+    "previewEducationSection",
+    container.innerHTML.trim() !== ""
   );
-
 }
 
-
-/* =========================================================
-   PROJECT PREVIEW
-   ========================================================= */
 
 function renderProjectPreview() {
 
@@ -1386,117 +1593,31 @@ function renderProjectPreview() {
 
   container.innerHTML = "";
 
-  const valid = resume.projects.filter(
-    item => item.name || item.description
-  );
+  resume.projects.forEach(item => {
 
+    if (!item.name && !item.description) return;
 
-  valid.forEach(item => {
+    container.innerHTML += `
+      <div class="resume-entry">
 
-    const div = document.createElement("div");
+        <div class="entry-title">
+          ${escapeHTML(item.name)}
+        </div>
 
-    div.className = "resume-entry";
-
-    let links = [];
-
-    if (item.link) {
-
-      links.push(
-        `<a href="${safeURL(item.link)}">Live</a>`
-      );
-
-    }
-
-    if (item.github) {
-
-      links.push(
-        `<a href="${safeURL(item.github)}">GitHub</a>`
-      );
-
-    }
-
-
-    div.innerHTML = `
-
-      <div class="resume-entry-title">
-
-        ${escapeHTML(item.name)}
+        <div class="entry-description">
+          ${formatText(item.description)}
+        </div>
 
       </div>
-
-      ${
-        item.technologies
-          ? `<div class="resume-entry-company">
-              ${escapeHTML(item.technologies)}
-             </div>`
-          : ""
-      }
-
-      ${
-        item.description
-          ? `<div class="resume-entry-description">
-              ${formatDescription(item.description)}
-             </div>`
-          : ""
-      }
-
-      ${
-        links.length
-          ? `<div class="resume-entry-description">
-              ${links.join(" • ")}
-             </div>`
-          : ""
-      }
-
     `;
-
-    container.appendChild(div);
-
   });
 
-
   toggleSection(
-    "projectSection",
-    valid.length > 0
+    "previewProjectsSection",
+    container.innerHTML.trim() !== ""
   );
-
 }
 
-
-/* =========================================================
-   SKILL PREVIEW
-   ========================================================= */
-
-function renderSkillPreview() {
-
-  const container = $("previewSkills");
-
-  container.innerHTML = "";
-
-  resume.skills.forEach(skill => {
-
-    const span = document.createElement("span");
-
-    span.className = "resume-skill";
-
-    span.textContent = skill;
-
-    container.appendChild(span);
-
-  });
-
-
-  toggleSection(
-    "skillSection",
-    resume.skills.length > 0
-  );
-
-}
-
-
-/* =========================================================
-   CERTIFICATION PREVIEW
-   ========================================================= */
 
 function renderCertificationPreview() {
 
@@ -1504,63 +1625,43 @@ function renderCertificationPreview() {
 
   container.innerHTML = "";
 
-  const valid = resume.certifications.filter(
-    item => item.name || item.issuer
-  );
+  resume.certifications.forEach(item => {
 
+    if (!item.name && !item.organization) return;
 
-  valid.forEach(item => {
+    container.innerHTML += `
+      <div class="resume-entry">
 
-    const div = document.createElement("div");
+        <div class="entry-top">
 
-    div.className = "resume-entry";
+          <div>
 
-    div.innerHTML = `
+            <div class="entry-title">
+              ${escapeHTML(item.name)}
+            </div>
 
-      <div class="resume-entry-top">
+            <div class="entry-subtitle">
+              ${escapeHTML(item.organization)}
+            </div>
 
-        <div class="resume-entry-title">
-          ${escapeHTML(item.name)}
-        </div>
+          </div>
 
-        <div class="resume-entry-date">
-          ${formatMonth(item.date)}
+          <div class="entry-date">
+            ${formatMonth(item.date)}
+          </div>
+
         </div>
 
       </div>
-
-      <div class="resume-entry-company">
-
-        ${escapeHTML(item.issuer)}
-
-      </div>
-
-      ${
-        item.credential
-          ? `<div class="resume-entry-description">
-              ${escapeHTML(item.credential)}
-             </div>`
-          : ""
-      }
-
     `;
-
-    container.appendChild(div);
-
   });
 
-
   toggleSection(
-    "certificationSection",
-    valid.length > 0
+    "previewCertificationSection",
+    container.innerHTML.trim() !== ""
   );
-
 }
 
-
-/* =========================================================
-   LANGUAGE PREVIEW
-   ========================================================= */
 
 function renderLanguagePreview() {
 
@@ -1568,180 +1669,47 @@ function renderLanguagePreview() {
 
   container.innerHTML = "";
 
-  const valid = resume.languages.filter(
-    item => item.language
-  );
+  resume.languages.forEach(item => {
 
+    if (!item.language) return;
 
-  valid.forEach(item => {
+    container.innerHTML += `
+      <div class="resume-entry">
 
-    const div = document.createElement("div");
+        <div class="entry-top">
 
-    div.className = "resume-language";
+          <div class="entry-title">
+            ${escapeHTML(item.language)}
+          </div>
 
-    div.innerHTML = `
+          <div class="entry-date">
+            ${escapeHTML(item.proficiency)}
+          </div>
 
-      <strong>${escapeHTML(item.language)}</strong>
+        </div>
 
-      ${
-        item.proficiency
-          ? ` — ${escapeHTML(item.proficiency)}`
-          : ""
-      }
-
+      </div>
     `;
-
-    container.appendChild(div);
-
   });
 
-
   toggleSection(
-    "languageSection",
-    valid.length > 0
+    "previewLanguageSection",
+    container.innerHTML.trim() !== ""
   );
-
 }
 
 
-/* =========================================================
-   SECTION VISIBILITY
-   ========================================================= */
-
-function toggleSection(id, show) {
-
-  const section = $(id);
-
-  if (!section) return;
-
-  section.classList.toggle("hidden", !show);
-
-}
-
-
-/* =========================================================
-   THEME
-   ========================================================= */
-
-function applyTheme() {
-
-  document.body.classList.toggle(
-    "dark",
-    resume.settings.theme === "dark"
-  );
-
-
-  $("themeBtn").textContent =
-    resume.settings.theme === "dark"
-      ? "☀"
-      : "☾";
-
-}
-
-
-/* =========================================================
-   TEMPLATE
-   ========================================================= */
-
-function applyTemplate() {
-
-  const resumeElement = $("resume");
-
-  resumeElement.classList.remove(
-    "modern",
-    "minimal"
-  );
-
-
-  if (resume.settings.template === "modern") {
-
-    resumeElement.classList.add("modern");
-
-  }
-
-  if (resume.settings.template === "minimal") {
-
-    resumeElement.classList.add("minimal");
-
-  }
-
-
-  $("templateSelect").value =
-    resume.settings.template;
-
-}
-
-
-/* =========================================================
-   ACCENT
-   ========================================================= */
-
-function applyAccent() {
-
-  const color =
-    resume.settings.accent || "#3157d5";
-
-
-  $("accentColor").value = color;
-
-  $("resume").style.setProperty(
-    "--resume-accent",
-    color
-  );
-
-}
-
-
-/* =========================================================
-   CLEAR
-   ========================================================= */
-
-function clearResume() {
-
-  const confirmed =
-    confirm(
-      "Clear all resume information? This cannot be undone."
-    );
-
-  if (!confirmed) return;
-
-
-  localStorage.removeItem(STORAGE_KEY);
-
-  location.reload();
-
-}
-
-
-/* =========================================================
-   FORMATTING
-   ========================================================= */
-
-function option(label, current) {
-
-  return `
-    <option
-      value="${escapeAttr(label)}"
-      ${current === label ? "selected" : ""}
-    >
-      ${escapeHTML(label)}
-    </option>
-  `;
-
-}
-
+/* ================= DATE ================= */
 
 function formatMonth(value) {
 
   if (!value) return "";
 
-  const parts = value.split("-");
-
-  if (parts.length !== 2) return value;
+  const [year, month] = value.split("-");
 
   const date = new Date(
-    Number(parts[0]),
-    Number(parts[1]) - 1
+    Number(year),
+    Number(month) - 1
   );
 
   return date.toLocaleDateString(
@@ -1751,135 +1719,141 @@ function formatMonth(value) {
       year: "numeric"
     }
   );
-
 }
 
 
-function dateRange(start, end) {
+function formatDateRange(start, end) {
 
-  const first = formatMonth(start);
+  if (!start && !end) return "";
 
-  const second = formatMonth(end);
+  const startText = formatMonth(start);
+  const endText = end
+    ? formatMonth(end)
+    : "Present";
 
-  if (!first && !second) return "";
+  if (!startText) return endText;
 
-  if (first && !second) {
-
-    return `${first} – Present`;
-
-  }
-
-  if (!first) return second;
-
-  return `${first} – ${second}`;
-
+  return `${startText} – ${endText}`;
 }
 
 
-/* =========================================================
-   DESCRIPTION
-   ========================================================= */
-
-function formatDescription(text) {
+function formatText(text) {
 
   if (!text) return "";
 
-  const lines = text
+  return escapeHTML(text)
     .split("\n")
-    .map(line => line.trim())
-    .filter(Boolean);
-
-
-  if (!lines.length) return "";
-
-
-  if (lines.length === 1) {
-
-    return escapeHTML(lines[0]);
-
-  }
-
-
-  return `
-    <ul>
-      ${lines.map(line =>
-        `<li>${escapeHTML(line)}</li>`
-      ).join("")}
-    </ul>
-  `;
-
+    .filter(line => line.trim())
+    .map(line => `<p>${line}</p>`)
+    .join("");
 }
 
 
-/* =========================================================
-   SECURITY HELPERS
-   ========================================================= */
+/* ================= SETTINGS ================= */
 
-function escapeHTML(value) {
+$("templateSelect").addEventListener("change", e => {
 
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  resume.settings.template =
+    e.target.value;
 
-}
-
-
-function escapeAttr(value) {
-
-  return escapeHTML(value);
-
-}
-
-
-function safeURL(value) {
-
-  if (!value) return "#";
-
-  let url = value.trim();
-
-  if (
-    !url.startsWith("http://") &&
-    !url.startsWith("https://")
-  ) {
-
-    url = "https://" + url;
-
-  }
-
-  return escapeAttr(url);
-
-}
-
-
-/* =========================================================
-   KEYBOARD SHORTCUT
-   ========================================================= */
-
-document.addEventListener("keydown", event => {
-
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.key.toLowerCase() === "s"
-  ) {
-
-    event.preventDefault();
-
-    saveResume();
-
-  }
-
-});
-
-
-/* =========================================================
-   INITIAL PREVIEW
-   ========================================================= */
-
-window.addEventListener("load", () => {
-
+  save();
   updatePreview();
+});
+
+
+$("accentColor").addEventListener("input", e => {
+
+  resume.settings.accent =
+    e.target.value;
+
+  save();
+  updatePreview();
+});
+
+
+$("themeBtn").addEventListener("click", () => {
+
+  resume.settings.theme =
+    resume.settings.theme === "dark"
+      ? "light"
+      : "dark";
+
+  applyTheme();
+
+  save();
+});
+
+
+function applyTheme() {
+
+  document.body.classList.toggle(
+    "dark",
+    resume.settings.theme === "dark"
+  );
+
+  $("themeBtn").textContent =
+    resume.settings.theme === "dark"
+      ? "☀"
+      : "☾";
+}
+
+
+/* ================= CLEAR ================= */
+
+$("clearBtn").addEventListener("click", () => {
+
+  const confirmed =
+    confirm("Clear all resume information?");
+
+  if (!confirmed) return;
+
+  localStorage.removeItem(STORAGE_KEY);
+
+  location.reload();
+});
+
+
+/* ================= PDF ================= */
+
+$("downloadBtn").addEventListener("click", () => {
+
+  window.print();
 
 });
+
+
+/* ================= INITIALIZE ================= */
+
+load();
+
+personalFields.forEach(id => {
+
+  $(id).value =
+    resume.personal[id] || "";
+
+});
+
+$("summary").value =
+  resume.summary || "";
+
+$("accentColor").value =
+  resume.settings.accent;
+
+$("templateSelect").value =
+  resume.settings.template;
+
+if (resume.personal.country === "India") {
+  populateStates();
+}
+
+renderDynamic("experience");
+renderDynamic("education");
+renderDynamic("project");
+renderDynamic("certification");
+renderDynamic("language");
+
+renderSkills();
+
+applyTheme();
+
+updatePreview();
