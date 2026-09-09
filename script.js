@@ -1,115 +1,1347 @@
-const KEY='resumeBuilder.v3';
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const uid=()=>Math.random().toString(36).slice(2,9);
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const clean=v=>String(v??'').trim();
-const lineHTML=v=>esc(v).replace(/\n/g,'<br>');
-const initial={personal:{fullName:'',jobTitle:'',email:'',phone:'',country:'India',state:'',district:'',city:'',street:'',linkedin:'',github:'',portfolio:'',photo:''},summary:'',education:[],experience:[],projects:[],skills:[],certifications:[],achievements:[],languages:[],custom:{title:'',type:'General',content:''},settings:{theme:'dark',template:'professional',accent:'#7c5cff',zoom:85}};
-let data=load(); let active='personal'; let saveTimer;
-function load(){try{return {...initial,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return structuredClone(initial)}}
-function merge(a,b){return {...a,...b,personal:{...a.personal,...(b.personal||{})},settings:{...a.settings,...(b.settings||{})}}}
-data=merge(initial,data);
-function save(){localStorage.setItem(KEY,JSON.stringify(data));$('#saveStatus').innerHTML='<em></em> Saved'}
-function schedule(){ $('#saveStatus').innerHTML='<em style="background:#f59e0b;box-shadow:0 0 10px #f59e0b"></em> Saving…';clearTimeout(saveTimer);saveTimer=setTimeout(()=>{save();updateAll()},350)}
+/* =========================================================
+   RESUME BUILDER — PROFESSIONAL UI
+   ========================================================= */
 
-const districts={
-'Andhra Pradesh':['Alluri Sitharama Raju','Anakapalli','Anantapur','Annamayya','Bapatla','Chittoor','Dr. B.R. Ambedkar Konaseema','East Godavari','Eluru','Guntur','Kakinada','Krishna','Kurnool','Nandyal','NTR','Palnadu','Parvathipuram Manyam','Prakasam','Sri Potti Sriramulu Nellore','Sri Sathya Sai','Srikakulam','Tirupati','Visakhapatnam','Vizianagaram','West Godavari','YSR Kadapa'],
-'Arunachal Pradesh':['Anjaw','Bichom','Changlang','Dibang Valley','East Kameng','East Siang','Itanagar Capital Complex','Kamle','Keyi Panyor','Kra Daadi','Kurung Kumey','Lepa Rada','Lohit','Longding','Lower Dibang Valley','Lower Siang','Lower Subansiri','Namsai','Pakke-Kessang','Papum Pare','Shi Yomi','Siang','Tawang','Tirap','Upper Siang','Upper Subansiri','West Kameng','West Siang'],
-'Assam':['Baksa','Bajali','Barpeta','Biswanath','Bongaigaon','Cachar','Charaideo','Chirang','Darrang','Dhemaji','Dhubri','Dibrugarh','Dima Hasao','Goalpara','Golaghat','Hailakandi','Hojai','Jorhat','Kamrup','Kamrup Metropolitan','Karbi Anglong','Karimganj','Kokrajhar','Lakhimpur','Majuli','Morigaon','Nagaon','Nalbari','Sivasagar','Sonitpur','South Salmara-Mankachar','Tamulpur','Tinsukia','Udalguri','West Karbi Anglong'],
-'Bihar':['Araria','Arwal','Aurangabad','Banka','Begusarai','Bhagalpur','Bhojpur','Buxar','Darbhanga','East Champaran','Gaya','Gopalganj','Jamui','Jehanabad','Kaimur','Katihar','Khagaria','Kishanganj','Lakhisarai','Madhepura','Madhubani','Munger','Muzaffarpur','Nalanda','Nawada','Patna','Purnia','Rohtas','Saharsa','Samastipur','Saran','Sheikhpura','Sheohar','Sitamarhi','Siwan','Supaul','Vaishali','West Champaran'],
-'Chhattisgarh':['Balod','Baloda Bazar','Balrampur-Ramanujganj','Bastar','Bemetara','Bijapur','Bilaspur','Dantewada','Dhamtari','Durg','Gariaband','Gaurela-Pendra-Marwahi','Janjgir-Champa','Jashpur','Kabirdham','Kanker','Khairagarh-Chhuikhadan-Gandai','Kondagaon','Korba','Koriya','Mahasamund','Manendragarh-Chirmiri-Bharatpur','Mohla-Manpur-Ambagarh Chowki','Mungeli','Narayanpur','Raigarh','Raipur','Rajnandgaon','Sakti','Sarangarh-Bilaigarh','Sukma','Surajpur','Surguja'],
-'Goa':['North Goa','South Goa'],
-'Gujarat':['Ahmedabad','Amreli','Anand','Aravalli','Banaskantha','Bharuch','Bhavnagar','Botad','Chhota Udaipur','Dahod','Dang','Devbhoomi Dwarka','Gandhinagar','Gir Somnath','Jamnagar','Junagadh','Kachchh','Kheda','Mahisagar','Mehsana','Morbi','Narmada','Navsari','Panchmahal','Patan','Porbandar','Rajkot','Sabarkantha','Surat','Surendranagar','Tapi','Vadodara','Valsad'],
-'Haryana':['Ambala','Bhiwani','Charkhi Dadri','Faridabad','Fatehabad','Gurugram','Hisar','Jhajjar','Jind','Kaithal','Karnal','Kurukshetra','Mahendragarh','Nuh','Palwal','Panchkula','Panipat','Rewari','Rohtak','Sirsa','Sonipat','Yamunanagar'],
-'Himachal Pradesh':['Bilaspur','Chamba','Hamirpur','Kangra','Kinnaur','Kullu','Lahaul and Spiti','Mandi','Shimla','Sirmaur','Solan','Una'],
-'Jharkhand':['Bokaro','Chatra','Deoghar','Dhanbad','Dumka','East Singhbhum','Garhwa','Giridih','Godda','Gumla','Hazaribagh','Jamtara','Khunti','Koderma','Latehar','Lohardaga','Pakur','Palamu','Ramgarh','Ranchi','Sahibganj','Seraikela Kharsawan','Simdega','West Singhbhum'],
-'Karnataka':['Bagalkot','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapur','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayapura','Yadgir'],
-'Kerala':['Alappuzha','Ernakulam','Idukki','Kannur','Kasaragod','Kollam','Kottayam','Kozhikode','Malappuram','Palakkad','Pathanamthitta','Thiruvananthapuram','Thrissur','Wayanad'],
-'Madhya Pradesh':['Agar Malwa','Alirajpur','Anuppur','Ashoknagar','Balaghat','Barwani','Betul','Bhind','Bhopal','Burhanpur','Chhatarpur','Chhindwara','Damoh','Datia','Dewas','Dhar','Dindori','Guna','Gwalior','Harda','Indore','Jabalpur','Jhabua','Katni','Khandwa','Khargone','Maihar','Mandla','Mandsaur','Mauganj','Morena','Narmadapuram','Narsinghpur','Neemuch','Niwari','Panna','Raisen','Rajgarh','Ratlam','Rewa','Sagar','Satna','Sehore','Seoni','Shahdol','Shajapur','Sheopur','Shivpuri','Sidhi','Singrauli','Tikamgarh','Ujjain','Umaria','Vidisha'],
-'Maharashtra':['Ahmednagar','Akola','Amravati','Beed','Bhandara','Buldhana','Chandrapur','Chhatrapati Sambhajinagar','Dharashiv','Dhule','Gadchiroli','Gondia','Hingoli','Jalgaon','Jalna','Kolhapur','Latur','Mumbai City','Mumbai Suburban','Nagpur','Nanded','Nandurbar','Nashik','Palghar','Parbhani','Pune','Raigad','Ratnagiri','Sangli','Satara','Sindhudurg','Solapur','Thane','Wardha','Washim','Yavatmal'],
-'Manipur':['Bishnupur','Chandel','Churachandpur','Imphal East','Imphal West','Jiribam','Kakching','Kamjong','Kangpokpi','Noney','Pherzawl','Senapati','Tamenglong','Tengnoupal','Thoubal','Ukhrul'],
-'Meghalaya':['East Garo Hills','East Jaintia Hills','East Khasi Hills','Eastern West Khasi Hills','North Garo Hills','Ri-Bhoi','South Garo Hills','South West Garo Hills','South West Khasi Hills','West Garo Hills','West Jaintia Hills','West Khasi Hills'],
-'Mizoram':['Aizawl','Champhai','Hnahthial','Khawzawl','Kolasib','Lawngtlai','Lunglei','Mamit','Saitual','Serchhip'],
-'Nagaland':['Chumoukedima','Dimapur','Kiphire','Kohima','Longleng','Mokokchung','Mon','Niuland','Noklak','Peren','Phek','Shamator','Tseminyu','Tuensang','Wokha','Zunheboto'],
-'Odisha':['Angul','Boudh','Balangir','Balasore','Bargarh','Bhadrak','Cuttack','Deogarh','Dhenkanal','Gajapati','Ganjam','Jagatsinghpur','Jajpur','Jharsuguda','Kalahandi','Kandhamal','Kendrapara','Keonjhar','Khordha','Koraput','Malkangiri','Mayurbhanj','Nabarangpur','Nayagarh','Nuapada','Puri','Rayagada','Sambalpur','Subarnapur','Sundargarh'],
-'Punjab':['Amritsar','Barnala','Bathinda','Faridkot','Fatehgarh Sahib','Fazilka','Ferozepur','Gurdaspur','Hoshiarpur','Jalandhar','Kapurthala','Ludhiana','Malerkotla','Mansa','Moga','Pathankot','Patiala','Rupnagar','Sahibzada Ajit Singh Nagar','Sangrur','Shaheed Bhagat Singh Nagar','Sri Muktsar Sahib','Tarn Taran'],
-'Rajasthan':['Ajmer','Alwar','Balotra','Banswara','Baran','Barmer','Beawar','Bharatpur','Bhilwara','Bikaner','Bundi','Chittorgarh','Churu','Dausa','Deeg','Dholpur','Didwana-Kuchamana','Dudu','Dungarpur','Ganganagar','Gangapur City','Hanumangarh','Jaipur','Jaipur Rural','Jaisalmer','Jalore','Jhalawar','Jhunjhunu','Jodhpur','Jodhpur Rural','Karauli','Kekri','Khairthal-Tijara','Kota','Kotputli-Behror','Nagaur','Neem Ka Thana','Pali','Phalodi','Pratapgarh','Rajsamand','Salumbar','Sawai Madhopur','Shahpura','Sikar','Sirohi','Tonk','Udaipur'],
-'Sikkim':['Gangtok','Gyalshing','Mangan','Namchi','Pakyong','Soreng'],
-'Tamil Nadu':['Ariyalur','Chengalpattu','Chennai','Coimbatore','Cuddalore','Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram','Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam','Namakkal','Nilgiris','Perambalur','Pudukkottai','Ramanathapuram','Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni','Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur','Tiruppur','Tiruvallur','Tiruvarur','Vellore','Viluppuram','Virudhunagar'],
-'Telangana':['Adilabad','Bhadradri Kothagudem','Hanamkonda','Hyderabad','Jagtial','Jangaon','Jayashankar Bhupalpally','Jogulamba Gadwal','Kamareddy','Karimnagar','Khammam','Komaram Bheem Asifabad','Mahabubabad','Mahbubnagar','Mancherial','Medak','Medchal-Malkajgiri','Mulugu','Nagarkurnool','Nalgonda','Narayanpet','Nirmal','Nizamabad','Peddapalli','Rajanna Sircilla','Rangareddy','Sangareddy','Siddipet','Suryapet','Vikarabad','Wanaparthy','Warangal','Yadadri Bhuvanagiri'],
-'Tripura':['Dhalai','Gomati','Khowai','North Tripura','Sepahijala','South Tripura','Unakoti','West Tripura'],
-'Uttar Pradesh':['Agra','Aligarh','Ambedkar Nagar','Amethi','Amroha','Auraiya','Ayodhya','Azamgarh','Baghpat','Bahraich','Ballia','Balrampur','Banda','Barabanki','Bareilly','Basti','Bhadohi','Bijnor','Budaun','Bulandshahr','Chandauli','Chitrakoot','Deoria','Etah','Etawah','Farrukhabad','Fatehpur','Firozabad','Gautam Buddha Nagar','Ghaziabad','Ghazipur','Gonda','Gorakhpur','Hamirpur','Hapur','Hardoi','Hathras','Jalaun','Jaunpur','Jhansi','Kannauj','Kanpur Dehat','Kanpur Nagar','Kasganj','Kaushambi','Kushinagar','Lakhimpur Kheri','Lalitpur','Lucknow','Maharajganj','Mahoba','Mainpuri','Mathura','Mau','Meerut','Mirzapur','Moradabad','Muzaffarnagar','Pilibhit','Pratapgarh','Prayagraj','Raebareli','Rampur','Saharanpur','Sambhal','Sant Kabir Nagar','Shahjahanpur','Shamli','Shravasti','Siddharthnagar','Sitapur','Sonbhadra','Sultanpur','Unnao','Varanasi'],
-'Uttarakhand':['Almora','Bageshwar','Chamoli','Champawat','Dehradun','Haridwar','Nainital','Pauri Garhwal','Pithoragarh','Rudraprayag','Tehri Garhwal','Udham Singh Nagar','Uttarkashi'],
-'West Bengal':['Alipurduar','Bankura','Paschim Bardhaman','Purba Bardhaman','Birbhum','Cooch Behar','Darjeeling','Hooghly','Howrah','Jalpaiguri','Jhargram','Kalimpong','Kolkata','Maldah','Murshidabad','Nadia','North 24 Parganas','South 24 Parganas','Paschim Medinipur','Purba Medinipur','Uttar Dinajpur','Dakshin Dinajpur'],
-'Andaman and Nicobar Islands':['Nicobar','North and Middle Andaman','South Andaman'],
-'Chandigarh':['Chandigarh'],
-'Dadra and Nagar Haveli and Daman and Diu':['Dadra and Nagar Haveli','Daman','Diu'],
-'Delhi':['Central Delhi','East Delhi','New Delhi','North Delhi','North East Delhi','North West Delhi','Shahdara','South Delhi','South East Delhi','South West Delhi','West Delhi'],
-'Jammu and Kashmir':['Anantnag','Bandipora','Baramulla','Budgam','Doda','Ganderbal','Jammu','Kathua','Kishtwar','Kulgam','Kupwara','Poonch','Pulwama','Rajouri','Ramban','Reasi','Samba','Shopian','Srinagar','Udhampur'],
-'Ladakh':['Kargil','Leh'],
-'Lakshadweep':['Agatti','Amini','Andrott','Bitra','Chetlat','Kadmat','Kalpeni','Kavaratti','Kiltan','Minicoy'],
-'Puducherry':['Karaikal','Mahe','Puducherry','Yanam']};
-const states=Object.keys(districts).sort((a,b)=>a.localeCompare(b));
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-2: #f8f9fc;
+  --border: #e4e7ef;
 
-function populateStates(){const s=$('#state');states.forEach(x=>s.add(new Option(x,x)));s.value=data.personal.state;populateDistricts(false)}
-function populateDistricts(reset=true){const s=$('#state'),d=$('#district');const list=districts[s.value]||[];d.innerHTML='<option value="">Select district</option>';list.forEach(x=>d.add(new Option(x,x)));d.disabled=!s.value;if(reset)d.value='';else d.value=data.personal.district}
+  --text: #172033;
+  --muted: #687386;
+  --soft: #929bad;
 
-const schemas={
- education:{title:'Education',fields:[['degree','Qualification','input','e.g. B.E. Computer Science'],['institution','Institution','input','e.g. Anna University'],['location','Location','input','City, State'],['start','Start date','month',''],['end','End date','month',''],['grade','Grade / CGPA','input','e.g. 8.7 / 10'],['description','Description','textarea','Relevant coursework, activities or academic highlights...']]},
- experience:{title:'Experience',fields:[['role','Job title','input','e.g. Software Engineer'],['company','Company','input','e.g. Acme Technologies'],['employment','Employment type','select','Full-time|Part-time|Internship|Contract|Freelance|Volunteer'],['location','Location','input','City, State / Remote'],['start','Start date','month',''],['end','End date','month',''],['description','Responsibilities & achievements','textarea','Use concise bullet-style lines. Start each line with an action or result.']]},
- projects:{title:'Project',fields:[['name','Project name','input','e.g. Smart Resume Builder'],['role','Your role','input','e.g. Full-stack Developer'],['technologies','Technologies / tools','input','e.g. React, Node.js, MongoDB'],['link','Project link','input','https://...'],['github','GitHub link','input','https://github.com/...'],['description','Description','textarea','What you built, your contribution and measurable outcome...']]},
- certifications:{title:'Certification',fields:[['name','Certification name','input','e.g. AWS Certified Cloud Practitioner'],['issuer','Issuing organization','input','e.g. Amazon Web Services'],['date','Issue date','month',''],['credential','Credential ID','input','Optional'],['link','Credential link','input','https://...']]},
- achievements:{title:'Achievement',fields:[['title','Achievement / award','input','e.g. Hackathon Finalist'],['issuer','Organization','input','e.g. University / Company'],['date','Date','month',''],['description','Details','textarea','Briefly explain the achievement and impact.']]},
- languages:{title:'Language',fields:[['language','Language','input','e.g. English'],['level','Proficiency','select','Basic|Conversational|Professional|Fluent|Native / Bilingual']]}
-};
-function renderEntries(type){const box=$('#'+({education:'educationEntries',experience:'experienceEntries',projects:'projectEntries',certifications:'certificationEntries',achievements:'achievementEntries',languages:'languageEntries'}[type]));const arr=data[type];box.innerHTML=arr.map((item,i)=>entryHTML(type,item,i)).join('');bindEntry(type)}
-function entryHTML(type,item,i){const sc=schemas[type];return `<article class="entry" draggable="true" data-type="${type}" data-id="${item.id}"><div class="entry-head"><strong>${sc.title} ${i+1}</strong><div class="entry-actions"><button class="drag-handle" title="Drag to reorder">↕</button><button data-move="up" title="Move up">↑</button><button data-move="down" title="Move down">↓</button><button class="remove" data-remove title="Remove">×</button></div></div><div class="form-grid two">${sc.fields.map(([key,label,kind,opts])=>field(type,item,key,label,kind,opts)).join('')}</div>${type==='experience'?`<label class="checkline"><input type="checkbox" data-field="current" ${item.current?'checked':''}> I currently work here</label>`:''}</article>`}
-function field(type,item,key,label,kind,opts){const val=item[key]??'';if(kind==='textarea')return `<label class="wide">${label}<textarea rows="5" data-field="${key}" placeholder="${esc(opts)}">${esc(val)}</textarea></label>`;if(kind==='select')return `<label>${label}<select data-field="${key}">${opts.split('|').map(x=>`<option ${x===val?'selected':''}>${x}</option>`).join('')}</select></label>`;return `<label>${label}<input data-field="${key}" type="${kind==='month'?'month':'text'}" value="${esc(val)}" placeholder="${esc(opts)}"></label>`}
-function bindEntry(type){const box=$('#'+({education:'educationEntries',experience:'experienceEntries',projects:'projectEntries',certifications:'certificationEntries',achievements:'achievementEntries',languages:'languageEntries'}[type]));box.querySelectorAll('.entry').forEach(card=>{const id=card.dataset.id;card.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',()=>{const item=data[type].find(x=>x.id===id);item[el.dataset.field]=el.type==='checkbox'?el.checked:el.value;schedule()}));card.querySelector('[data-remove]').onclick=()=>{data[type]=data[type].filter(x=>x.id!==id);renderEntries(type);updateAll();schedule()};card.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=()=>moveEntry(type,id,btn.dataset.move));card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',id)});card.addEventListener('dragover',e=>e.preventDefault());card.addEventListener('drop',e=>{e.preventDefault();const from=e.dataTransfer.getData('text/plain');reorder(type,from,id)})})}
-function moveEntry(type,id,dir){const a=data[type],i=a.findIndex(x=>x.id===id),j=dir==='up'?i-1:i+1;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];renderEntries(type);schedule();updatePreview()}
-function reorder(type,from,to){const a=data[type],i=a.findIndex(x=>x.id===from),j=a.findIndex(x=>x.id===to);if(i<0||j<0||i===j)return;const [x]=a.splice(i,1);a.splice(j,0,x);renderEntries(type);schedule();updatePreview()}
-function addEntry(type){data[type].push({id:uid()});renderEntries(type);schedule();updateAll()}
+  --primary: #3157d5;
+  --primary-dark: #2444ad;
+  --primary-soft: #eef2ff;
 
-function bindBasics(){const map=['fullName','jobTitle','email','phone','country','state','district','city','street','linkedin','github','portfolio','summary','customTitle','customType','customContent'];map.forEach(id=>{const el=$('#'+id);if(!el)return;el.addEventListener('input',()=>{setBasic(id,el.value);if(id==='summary')updateSummaryCount();schedule()});el.addEventListener('change',()=>{setBasic(id,el.value);if(id==='state'){data.personal.state=el.value;populateDistricts(true);data.personal.district=''}schedule()})});$('#country').addEventListener('change',()=>{data.personal.country=$('#country').value;schedule()});$('#state').addEventListener('change',()=>{data.personal.state=$('#state').value;populateDistricts(true);schedule()});$('#district').addEventListener('change',()=>{data.personal.district=$('#district').value;schedule()});$('#profilePhoto').addEventListener('change',photoUpload);$('#removePhoto').onclick=()=>{data.personal.photo='';$('#photoThumb').src='';$('#photoThumb').parentElement.classList.remove('has-photo');$('#photoEmpty').style.display='block';updatePreview();schedule()};$('#addSkill').onclick=addSkill;$('#skillInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addSkill()}});$('#skillSuggestions').onclick=e=>{if(e.target.tagName==='BUTTON'){const v=e.target.textContent;if(!data.skills.includes(v))data.skills.push(v);renderSkills();schedule();updatePreview()}}}
-function setBasic(id,v){if(['customTitle','customType','customContent'].includes(id))data.custom[id.replace('custom','').replace(/^./,x=>x.toLowerCase())]=v;else if(id==='summary')data.summary=v;else data.personal[id]=v;updatePreview()}
-function fillBasics(){const p=data.personal;['fullName','jobTitle','email','phone','country','state','district','city','street','linkedin','github','portfolio'].forEach(id=>{if($('#'+id))$('#'+id).value=p[id]||''});$('#summary').value=data.summary;$('#customTitle').value=data.custom.title||'';$('#customType').value=data.custom.type||'General';$('#customContent').value=data.custom.content||'';if(p.photo){$('#photoThumb').src=p.photo;$('#photoThumb').parentElement.classList.add('has-photo');$('#photoEmpty').style.display='none'}}
-function photoUpload(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{data.personal.photo=r.result;$('#photoThumb').src=r.result;$('#photoThumb').parentElement.classList.add('has-photo');$('#photoEmpty').style.display='none';updatePreview();schedule()};r.readAsDataURL(f)}
-function addSkill(){const input=$('#skillInput'),v=clean(input.value);if(!v)return;if(!data.skills.some(x=>x.toLowerCase()===v.toLowerCase()))data.skills.push(v);input.value='';renderSkills();updatePreview();schedule()}
-function renderSkills(){$('#skillsList').innerHTML=data.skills.map((x,i)=>`<span class="tag">${esc(x)}<button data-skill="${i}" title="Remove">×</button></span>`).join('');$$('[data-skill]').forEach(b=>b.onclick=()=>{data.skills.splice(+b.dataset.skill,1);renderSkills();updatePreview();schedule()})}
-function dateRange(a,b,current){const f=x=>{if(!x)return '';const [y,m]=x.split('-');return new Date(+y,+m-1).toLocaleDateString('en',{month:'short',year:'numeric'})};return `${f(a)}${a?' – ':''}${current?'Present':f(b)}`}
-function bullets(text){const lines=clean(text).split(/\n+/).map(x=>clean(x)).filter(Boolean);return lines.length>1?`<ul>${lines.map(x=>`<li>${esc(x.replace(/^[-•*]\s*/,''))}</li>`).join('')}</ul>`:`<p>${esc(lines[0]||'')}</p>`}
-function linkLabel(v){if(!clean(v))return '';let x=v.replace(/^https?:\/\//,'').replace(/\/$/,'');return `<a href="${esc(v.match(/^https?:\/\//)?v:'https://'+v)}" target="_blank">${esc(x)}</a>`}
-function contactHTML(){const p=data.personal,parts=[];if(p.email)parts.push(`<span>${esc(p.email)}</span>`);if(p.phone)parts.push(`<span>${esc(p.phone)}</span>`);const loc=[p.city,p.district,p.state,p.country].filter(Boolean).join(', ');if(loc)parts.push(`<span>${esc(loc)}</span>`);if(p.linkedin)parts.push(linkLabel(p.linkedin));if(p.github)parts.push(linkLabel(p.github));if(p.portfolio)parts.push(linkLabel(p.portfolio));return parts.join('<span aria-hidden="true">•</span>')}
-function show(id,on){const e=$(id);if(e)e.style.display=on?'':'none'}
-function updatePreview(){const p=data.personal;$('#previewName').textContent=p.fullName||'Your Name';$('#previewJobTitle').textContent=p.jobTitle||'Professional Title';$('#previewContact').innerHTML=contactHTML();$('#previewSummary').textContent=data.summary;show('#previewSummarySection',!!clean(data.summary));
-  const photo=$('#previewPhotoWrap');if(p.photo){photo.style.display='block';$('#previewPhoto').src=p.photo}else photo.style.display='none';
-  renderResumeEntries('experience','previewExperience',x=>`<div class="resume-entry"><div class="resume-entry-head"><div><div class="resume-entry-title">${esc(x.role||'Job title')}</div><div class="resume-entry-org">${esc([x.company,x.employment,x.location].filter(Boolean).join(' · '))}</div></div><div class="resume-entry-date">${dateRange(x.start,x.end,x.current)}</div></div>${bullets(x.description)}</div>`);
-  renderResumeEntries('education','previewEducation',x=>`<div class="resume-entry"><div class="resume-entry-head"><div><div class="resume-entry-title">${esc(x.degree||'Qualification')}</div><div class="resume-entry-org">${esc([x.institution,x.location,x.grade].filter(Boolean).join(' · '))}</div></div><div class="resume-entry-date">${dateRange(x.start,x.end,false)}</div></div>${clean(x.description)?`<p>${lineHTML(x.description)}</p>`:''}</div>`);
-  renderResumeEntries('projects','previewProjects',x=>`<div class="resume-entry"><div class="resume-entry-head"><div><div class="resume-entry-title">${esc(x.name||'Project')}</div><div class="resume-entry-org">${esc([x.role,x.technologies].filter(Boolean).join(' · '))}</div></div></div>${bullets(x.description)}${x.link||x.github?`<p>${[x.link,x.github].filter(Boolean).map(linkLabel).join(' · ')}</p>`:''}</div>`);
-  renderResumeEntries('certifications','previewCertifications',x=>`<div class="resume-entry"><div class="resume-entry-head"><div><div class="resume-entry-title">${esc(x.name||'Certification')}</div><div class="resume-entry-org">${esc([x.issuer,x.credential].filter(Boolean).join(' · '))}</div></div><div class="resume-entry-date">${dateRange(x.date,'',false)}</div></div>${x.link?`<p>${linkLabel(x.link)}</p>`:''}</div>`);
-  renderResumeEntries('achievements','previewAchievements',x=>`<div class="resume-entry"><div class="resume-entry-head"><div><div class="resume-entry-title">${esc(x.title||'Achievement')}</div><div class="resume-entry-org">${esc(x.issuer||'')}</div></div><div class="resume-entry-date">${dateRange(x.date,'',false)}</div></div>${clean(x.description)?`<p>${lineHTML(x.description)}</p>`:''}</div>`);
-  renderResumeEntries('languages','previewLanguages',x=>`<span>${esc(x.language||'Language')} · ${esc(x.level||'Proficiency')}</span>`);
-  $('#previewSkills').innerHTML=data.skills.map(x=>`<span>${esc(x)}</span>`).join('');show('#previewSkillsSection',data.skills.length>0);
-  $('#previewCustomTitle').textContent=data.custom.title||'Additional Information';$('#previewCustomContent').innerHTML=clean(data.custom.content)?bullets(data.custom.content):'';show('#previewCustomSection',!!clean(data.custom.title)&&!!clean(data.custom.content));
-  ['experience','education','projects','certifications','achievements','languages'].forEach(t=>{const id='#preview'+t[0].toUpperCase()+t.slice(1);show(id,data[t].length>0)});
-  const r=$('#resumePreview');r.className=`resume template-${data.settings.template}`;document.documentElement.style.setProperty('--primary',data.settings.accent);r.style.setProperty('--primary',data.settings.accent);applyZoom();
+  --success: #16845b;
+  --danger: #d14343;
+
+  --shadow: 0 16px 45px rgba(23, 32, 51, 0.08);
+
+  --radius: 16px;
+  --resume-width: 794px;
+  --resume-height: 1123px;
+
+  --font: "Inter", Arial, sans-serif;
 }
-function renderResumeEntries(type,id,fn){const box=$('#'+id);if(!box)return;box.innerHTML=data[type].map(fn).join('')}
-function cloneResume(){const c=$('#resumePreview').cloneNode(true);c.id='modalResume';c.style.transform='none';return c}
-function applyZoom(){const z=data.settings.zoom||85;$('#zoomLabel').textContent=z+'%';$('#resumePreview').style.transform=`scale(${z/100})`;$('#resumePreview').style.marginBottom=`-${Math.max(0,1123*(1-z/100))}px`}
-function setTheme(){document.body.classList.toggle('light',data.settings.theme==='light');$('#themeToggle').textContent=data.settings.theme==='light'?'☾':'☼'}
-function setupNav(){ $$('.nav-item').forEach(b=>b.onclick=()=>go(b.dataset.section)); }
-function go(sec){active=sec;$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.section===sec));$$('.editor-section').forEach(s=>s.classList.toggle('active',s.dataset.section===sec));$('.editor').scrollTo({top:0,behavior:'smooth'})}
-function setupButtons(){ $$('[data-add]').forEach(b=>b.onclick=()=>addEntry(b.dataset.add));$('#themeToggle').onclick=()=>{data.settings.theme=data.settings.theme==='dark'?'light':'dark';setTheme();schedule()};$('#templateBtn').onclick=()=>openModal('templateModal');$('#fullPreviewBtn').onclick=openFullPreview;$('#downloadBtn').onclick=printResume;$('#modalDownload').onclick=printResume;$('#qualityBtn').onclick=qualityCheck;$('#zoomIn').onclick=()=>{data.settings.zoom=Math.min(105,(data.settings.zoom||85)+5);applyZoom()};$('#zoomOut').onclick=()=>{data.settings.zoom=Math.max(55,(data.settings.zoom||85)-5);applyZoom()};$('#editTab').onclick=()=>{$('.editor').style.display='block';$('.preview-panel').classList.remove('mobile-open');$('#editTab').classList.add('active');$('#previewTab').classList.remove('active')};$('#previewTab').onclick=()=>{$('.editor').style.display='none';$('.preview-panel').classList.add('mobile-open');$('#previewTab').classList.add('active');$('#editTab').classList.remove('active')};$$('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));$$('.template-card').forEach(b=>b.onclick=()=>{data.settings.template=b.dataset.template;$$('.template-card').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');updatePreview();schedule();toast(`${b.textContent.trim().split('\n')[0]} template selected`)});buildAccentChoices()}
-function buildAccentChoices(){const colors=['#2563eb','#7c5cff','#0891b2','#059669','#ea580c','#dc2626','#db2777','#111827','#0f766e'];$('#accentChoices').innerHTML=colors.map(c=>`<button class="color-dot" style="background:${c}" data-color="${c}" aria-label="${c}"></button>`).join('');$$('[data-color]').forEach(b=>b.onclick=()=>{data.settings.accent=b.dataset.color;updatePreview();schedule();$$('[data-color]').forEach(x=>x.classList.toggle('selected',x.dataset.color===data.settings.accent))});}
-function openModal(id){$('#'+id).classList.add('open')};function closeModal(id){$('#'+id).classList.remove('open')}
-function openFullPreview(){$('#modalResume').replaceWith(cloneResume());openModal('fullPreviewModal')}
-function printResume(){updatePreview();document.body.classList.add('print-preview');setTimeout(()=>window.print(),80)}
-function qualityCheck(){const checks=[['good',!!data.personal.fullName,'Full name added'],['good',!!data.personal.email||!!data.personal.phone,'At least one contact method added'],['good',!!data.personal.city||!!data.personal.state,'Location added'],['good',!!data.summary,'Professional summary added'],['good',data.education.length>0,'Education added'],['good',data.experience.length>0||data.projects.length>0,'Experience or projects added'],['good',data.skills.length>=3,'At least 3 skills added'],['warn',!!(data.personal.linkedin||data.personal.github||data.personal.portfolio),'Consider adding a professional link'],['warn',data.achievements.length>0,'Add achievements if you have relevant ones']];$('#qualityList').innerHTML=checks.map(([type,ok,msg])=>`<div class="quality-item"><i class="${ok?'good':type}">${ok?'✓':'!'}</i><span>${msg}</span></div>`).join('');openModal('qualityModal')}
-function updateSummaryCount(){$('#summaryCount').textContent=`${($('#summary').value||'').length} / 1200`}
-function completion(){const tests=[!!data.personal.fullName,!!data.personal.email||!!data.personal.phone,!!data.summary,data.education.length>0,data.experience.length>0,data.projects.length>0,data.skills.length>0,data.certifications.length>0,data.achievements.length>0,data.languages.length>0];const n=Math.round(tests.filter(Boolean).length/tests.length*100);$('#completionText').textContent=n+'%';$('#completionBar').style.width=n+'%'}
-function updateAll(){updatePreview();completion()}
-function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>x.classList.remove('show'),1800)}
-window.addEventListener('beforeprint',()=>{document.body.classList.add('printing')});window.addEventListener('afterprint',()=>document.body.classList.remove('print-preview','printing'));
-function init(){populateStates();fillBasics();setupNav();setupButtons();bindBasics();Object.keys(schemas).forEach(renderEntries);renderSkills();setTheme();$$('.template-card').forEach(b=>b.classList.toggle('selected',b.dataset.template===data.settings.template));$$('[data-color]').forEach(x=>x.classList.toggle('selected',x.dataset.color===data.settings.accent));updateSummaryCount();updateAll()}
-init();
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(49, 87, 213, .10), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(139, 92, 246, .08), transparent 25%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.topbar {
+  height: 76px;
+  background: rgba(255, 255, 255, .88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 28px;
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  color: white;
+  font-weight: 800;
+  font-size: 19px;
+
+  background:
+    linear-gradient(135deg, #3157d5, #7c4dff);
+
+  box-shadow: 0 8px 20px rgba(49, 87, 213, .25);
+}
+
+.brand h1 {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.brand p {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-btn,
+.clear-btn,
+.download-btn {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 14px;
+  font-size: 11px;
+  font-weight: 700;
+  transition: .2s ease;
+}
+
+.theme-btn {
+  width: 38px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.theme-btn:hover,
+.clear-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.download-btn {
+  border: none;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), #6746df);
+  box-shadow: 0 8px 18px rgba(49, 87, 213, .22);
+}
+
+.download-btn:hover {
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   MAIN APP
+   ========================================================= */
+
+.app {
+  max-width: 1700px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: minmax(500px, 1fr) minmax(650px, 900px);
+
+  min-height: calc(100vh - 76px);
+}
+
+
+/* =========================================================
+   EDITOR
+   ========================================================= */
+
+.editor {
+  padding: 42px 42px 80px;
+  overflow-y: auto;
+
+  border-right: 1px solid var(--border);
+}
+
+.editor-heading {
+  max-width: 720px;
+  margin: 0 auto 28px;
+}
+
+.eyebrow {
+  display: block;
+
+  color: var(--primary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: .18em;
+
+  margin-bottom: 7px;
+}
+
+.editor-heading h2,
+.preview-header h2 {
+  font-size: 27px;
+  letter-spacing: -.04em;
+}
+
+.editor-heading p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+  max-width: 720px;
+  margin: 0 auto 18px;
+
+  background: rgba(255,255,255,.94);
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius);
+
+  padding: 24px;
+
+  box-shadow: 0 8px 28px rgba(23, 32, 51, .035);
+
+  transition: .2s ease;
+}
+
+.card:hover {
+  border-color: #d5daf0;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 22px;
+}
+
+.number {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--primary);
+  background: var(--primary-soft);
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.card-title h3 {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.card-title p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+.grid.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #414b60;
+}
+
+.field input,
+.field select,
+.field textarea,
+.skill-input input {
+  width: 100%;
+
+  border: 1px solid #dfe3eb;
+  border-radius: 10px;
+
+  background: #fbfcfe;
+  color: var(--text);
+
+  padding: 11px 12px;
+
+  outline: none;
+
+  font-size: 11px;
+
+  transition: .2s ease;
+}
+
+.field input,
+.field select {
+  height: 40px;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 105px;
+  line-height: 1.55;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.skill-input input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(49,87,213,.09);
+  background: white;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #a5adbb;
+}
+
+
+/* =========================================================
+   PHOTO
+   ========================================================= */
+
+.photo-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 14px;
+
+  margin-bottom: 20px;
+
+  border: 1px dashed #d8ddea;
+  border-radius: 12px;
+
+  background: #fafbfe;
+}
+
+.photo-preview {
+  width: 62px;
+  height: 62px;
+
+  border-radius: 12px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  background: #eef1f7;
+
+  color: var(--primary);
+
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-label {
+  display: inline-block;
+
+  padding: 8px 11px;
+
+  border-radius: 8px;
+
+  background: var(--primary);
+  color: white;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.upload-label input {
+  display: none;
+}
+
+.photo-area small {
+  display: block;
+  margin-top: 6px;
+
+  color: var(--soft);
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   ADD BUTTON
+   ========================================================= */
+
+.add-btn {
+  width: 100%;
+
+  height: 40px;
+
+  border-radius: 10px;
+
+  border: 1px dashed #cbd2e2;
+
+  background: #fafbfe;
+
+  color: var(--primary);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  transition: .2s ease;
+}
+
+.add-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+
+/* =========================================================
+   DYNAMIC ENTRY
+   ========================================================= */
+
+.entry {
+  position: relative;
+
+  padding: 16px;
+
+  margin-bottom: 12px;
+
+  border: 1px solid #e3e6ee;
+  border-radius: 12px;
+
+  background: #fafbfc;
+}
+
+.entry-remove {
+  position: absolute;
+
+  right: 12px;
+  top: 12px;
+
+  border: none;
+  background: transparent;
+
+  color: #9aa3b3;
+
+  font-size: 15px;
+}
+
+.entry-remove:hover {
+  color: var(--danger);
+}
+
+.entry .grid {
+  padding-right: 24px;
+}
+
+
+/* =========================================================
+   SKILLS
+   ========================================================= */
+
+.skill-input {
+  display: flex;
+  gap: 8px;
+}
+
+.skill-input input {
+  height: 40px;
+}
+
+.skill-input button {
+  width: 70px;
+
+  border: none;
+  border-radius: 10px;
+
+  color: white;
+  background: var(--primary);
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 12px;
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 9px;
+
+  border-radius: 7px;
+
+  background: #eef2ff;
+  color: #304da9;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.skill-tag button {
+  border: none;
+  background: transparent;
+
+  color: inherit;
+
+  font-size: 13px;
+  line-height: 1;
+}
+
+
+/* =========================================================
+   PREVIEW AREA
+   ========================================================= */
+
+.preview-area {
+  min-width: 0;
+
+  padding: 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.65),
+      rgba(241,244,251,.9)
+    );
+
+  overflow: auto;
+}
+
+.preview-header {
+  max-width: 900px;
+  margin: 0 auto 18px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.preview-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-tools select {
+  height: 36px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  padding: 0 10px;
+
+  background: white;
+
+  color: var(--text);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+#accentColor {
+  width: 36px;
+  height: 36px;
+
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  padding: 3px;
+
+  background: white;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   RESUME FRAME
+   ========================================================= */
+
+.resume-frame {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 15px;
+
+  overflow: auto;
+}
+
+.resume {
+  width: var(--resume-width);
+  min-width: var(--resume-width);
+
+  height: var(--resume-height);
+
+  background: white;
+
+  color: #20242d;
+
+  box-shadow:
+    0 25px 70px rgba(20, 27, 45, .16),
+    0 2px 8px rgba(20, 27, 45, .08);
+
+  padding: 55px 60px;
+
+  overflow: hidden;
+
+  position: relative;
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================================
+   RESUME HEADER
+   ========================================================= */
+
+.resume-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding-bottom: 22px;
+
+  border-bottom: 2px solid var(--resume-accent, #3157d5);
+}
+
+.resume-identity {
+  min-width: 0;
+}
+
+.resume-identity h1 {
+  color: #151922;
+
+  font-family: "Inter", Arial, sans-serif;
+
+  font-size: 31px;
+  line-height: 1.05;
+
+  font-weight: 800;
+
+  letter-spacing: -.035em;
+
+  margin-bottom: 7px;
+}
+
+.resume-identity h2 {
+  color: var(--resume-accent, #3157d5);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  margin-bottom: 11px;
+}
+
+.contact-line,
+.links-line {
+  color: #596171;
+
+  font-size: 8.7px;
+
+  line-height: 1.65;
+}
+
+.links-line {
+  margin-top: 2px;
+}
+
+.links-line a {
+  color: #596171;
+  text-decoration: none;
+}
+
+.resume-photo {
+  width: 78px;
+  height: 78px;
+
+  object-fit: cover;
+
+  border-radius: 8px;
+
+  display: none;
+}
+
+
+/* =========================================================
+   RESUME SECTIONS
+   ========================================================= */
+
+.resume-section {
+  margin-top: 17px;
+}
+
+.resume-section h3 {
+  color: var(--resume-accent, #3157d5);
+
+  font-size: 9.5px;
+  font-weight: 800;
+
+  letter-spacing: .13em;
+
+  margin-bottom: 8px;
+
+  padding-bottom: 4px;
+
+  border-bottom: 1px solid #e1e4e9;
+}
+
+.resume-section p {
+  color: #3e4551;
+
+  font-size: 8.8px;
+  line-height: 1.48;
+
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   RESUME ENTRIES
+   ========================================================= */
+
+.resume-entry {
+  margin-bottom: 10px;
+}
+
+.resume-entry:last-child {
+  margin-bottom: 0;
+}
+
+.resume-entry-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  gap: 15px;
+}
+
+.resume-entry-title {
+  color: #171b23;
+
+  font-size: 9.6px;
+  font-weight: 800;
+}
+
+.resume-entry-date {
+  flex-shrink: 0;
+
+  color: #697281;
+
+  font-size: 7.8px;
+  font-weight: 600;
+}
+
+.resume-entry-company {
+  margin-top: 2px;
+
+  color: var(--resume-accent, #3157d5);
+
+  font-size: 8.3px;
+  font-weight: 700;
+}
+
+.resume-entry-description {
+  margin-top: 4px;
+
+  color: #464d58;
+
+  font-size: 8.2px;
+  line-height: 1.42;
+}
+
+.resume-entry-description ul {
+  padding-left: 13px;
+}
+
+.resume-entry-description li {
+  margin-bottom: 2px;
+}
+
+
+/* =========================================================
+   SKILLS
+   ========================================================= */
+
+.resume-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+}
+
+.resume-skill {
+  color: #343b47;
+
+  font-size: 8.2px;
+  font-weight: 600;
+
+  position: relative;
+
+  padding-left: 8px;
+}
+
+.resume-skill::before {
+  content: "";
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+
+  background: var(--resume-accent, #3157d5);
+
+  position: absolute;
+  left: 0;
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+
+/* =========================================================
+   LANGUAGES
+   ========================================================= */
+
+.resume-languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.resume-language {
+  color: #3e4551;
+
+  font-size: 8.2px;
+}
+
+.resume-language strong {
+  color: #20242d;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   PDF NOTE
+   ========================================================= */
+
+.pdf-note {
+  max-width: 900px;
+
+  margin: 10px auto 0;
+
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+.pdf-note strong {
+  color: var(--text);
+}
+
+
+/* =========================================================
+   MODERN TEMPLATE
+   ========================================================= */
+
+.resume.modern {
+  padding-top: 0;
+}
+
+.resume.modern .resume-header {
+  margin: 0 -60px;
+  padding: 55px 60px 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(49,87,213,.07),
+      rgba(124,77,255,.04)
+    );
+
+  border-bottom: 2px solid var(--resume-accent, #3157d5);
+}
+
+.resume.modern .resume-section h3 {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+
+/* =========================================================
+   MINIMAL TEMPLATE
+   ========================================================= */
+
+.resume.minimal {
+  padding: 62px 65px;
+}
+
+.resume.minimal .resume-header {
+  border-bottom: 1px solid #cfd4dc;
+}
+
+.resume.minimal .resume-identity h1 {
+  font-weight: 600;
+}
+
+.resume.minimal .resume-section h3 {
+  color: #242a34;
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   DARK UI
+   ========================================================= */
+
+body.dark {
+  --bg: #0d1119;
+  --surface: #151b26;
+  --surface-2: #111722;
+  --border: #252d3c;
+
+  --text: #edf1f8;
+  --muted: #9aa5b8;
+  --soft: #707b8e;
+
+  background:
+    radial-gradient(circle at 10% 10%, rgba(49,87,213,.18), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(124,77,255,.13), transparent 25%),
+    var(--bg);
+}
+
+body.dark .topbar {
+  background: rgba(13,17,25,.88);
+}
+
+body.dark .card,
+body.dark .field input,
+body.dark .field select,
+body.dark .field textarea,
+body.dark .skill-input input,
+body.dark .preview-tools select,
+body.dark #accentColor {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark .photo-area,
+body.dark .entry,
+body.dark .add-btn {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+body.dark .field label {
+  color: #b9c1cf;
+}
+
+body.dark .preview-area {
+  background: #10151f;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1250px) {
+
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .editor {
+    border-right: none;
+  }
+
+  .preview-area {
+    border-top: 1px solid var(--border);
+  }
+
+  .preview-header {
+    max-width: 850px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .topbar {
+    height: auto;
+    min-height: 68px;
+
+    padding: 10px 14px;
+
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand h1 {
+    font-size: 14px;
+  }
+
+  .brand p {
+    display: none;
+  }
+
+  .top-actions {
+    gap: 5px;
+  }
+
+  .clear-btn {
+    display: none;
+  }
+
+  .download-btn {
+    padding: 0 10px;
+    font-size: 9px;
+  }
+
+  .editor {
+    padding: 28px 12px 50px;
+  }
+
+  .editor-heading {
+    padding: 0 5px;
+  }
+
+  .editor-heading h2,
+  .preview-header h2 {
+    font-size: 23px;
+  }
+
+  .card {
+    padding: 17px;
+    border-radius: 13px;
+  }
+
+  .grid.two {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .preview-area {
+    padding: 20px 8px 40px;
+  }
+
+  .preview-header {
+    padding: 0 6px;
+
+    align-items: center;
+  }
+
+  .preview-tools select {
+    max-width: 105px;
+  }
+
+  .resume-frame {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+
+    padding: 10px;
+  }
+
+  .pdf-note {
+    flex-direction: column;
+    text-align: center;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+  .brand {
+    gap: 7px;
+  }
+
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 9px;
+  }
+
+  .brand h1 {
+    font-size: 12px;
+  }
+
+  .theme-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .download-btn {
+    height: 34px;
+  }
+
+  .card-title {
+    margin-bottom: 18px;
+  }
+
+  .skill-input {
+    flex-direction: column;
+  }
+
+  .skill-input button {
+    width: 100%;
+    height: 38px;
+  }
+
+}
+
+
+/* =========================================================
+   PRINT / PDF
+   ========================================================= */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: white !important;
+  }
+
+  body {
+    overflow: visible !important;
+  }
+
+  .topbar,
+  .editor,
+  .preview-header,
+  .pdf-note {
+    display: none !important;
+  }
+
+  .app {
+    display: block !important;
+
+    width: 210mm;
+    min-height: 297mm;
+
+    margin: 0 !important;
+  }
+
+  .preview-area {
+    display: block !important;
+
+    width: 210mm;
+    height: 297mm;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+
+    background: white !important;
+  }
+
+  .resume-frame {
+    display: block !important;
+
+    width: 210mm;
+    height: 297mm;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+  }
+
+  .resume {
+    width: 210mm !important;
+    height: 297mm !important;
+
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    padding: 15mm 16mm !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+  }
+
+  .resume.modern .resume-header {
+    margin-left: -16mm;
+    margin-right: -16mm;
+
+    padding-left: 16mm;
+    padding-right: 16mm;
+  }
+
+  .resume-section {
+    break-inside: avoid;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(49,87,213,.22);
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd1dc;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #aeb6c5;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+}
