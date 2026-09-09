@@ -1,136 +1,556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1020">
-<meta name="description" content="Resume Builder — create a polished, professional resume with live A4 preview and print-ready PDF output.">
-<title>Resume Builder</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Resume Builder</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="ambient"><i></i><i></i><i></i><div class="grid"></div></div>
-<div class="app-shell">
-<header class="topbar">
-  <a class="brand" href="#" aria-label="Resume Builder home"><span class="brand-logo">R</span><span><b>Resume Builder</b><small>Professional Resume Studio</small></span></a>
-  <div class="top-actions">
-    <span class="save-pill" id="saveStatus"><em></em> Saved</span>
-    <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">☼</button>
-    <button class="btn ghost" id="templateBtn">Templates</button>
-    <button class="btn ghost" id="fullPreviewBtn">Preview</button>
-    <button class="btn primary" id="downloadBtn">Download PDF</button>
-  </div>
-</header>
 
-<main class="workspace">
-<aside class="sidebar">
-  <div class="side-title"><span>Resume sections</span><b id="completionText">0%</b></div>
-  <div class="progress"><i id="completionBar"></i></div>
-  <nav id="sectionNav">
-    <button class="nav-item active" data-section="personal"><span>01</span> Personal <b>›</b></button>
-    <button class="nav-item" data-section="summary"><span>02</span> Summary <b>›</b></button>
-    <button class="nav-item" data-section="education"><span>03</span> Education <b>›</b></button>
-    <button class="nav-item" data-section="experience"><span>04</span> Experience <b>›</b></button>
-    <button class="nav-item" data-section="projects"><span>05</span> Projects <b>›</b></button>
-    <button class="nav-item" data-section="skills"><span>06</span> Skills <b>›</b></button>
-    <button class="nav-item" data-section="certifications"><span>07</span> Certifications <b>›</b></button>
-    <button class="nav-item" data-section="achievements"><span>08</span> Achievements <b>›</b></button>
-    <button class="nav-item" data-section="languages"><span>09</span> Languages <b>›</b></button>
-    <button class="nav-item" data-section="custom"><span>10</span> Custom section <b>›</b></button>
-  </nav>
-  <div class="side-bottom"><button id="qualityBtn" class="quality-btn">✓ Resume Quality Check</button><p>Tip: Keep your final resume to 1–2 pages and use concise bullet points.</p></div>
-</aside>
+  <!-- ================= HEADER ================= -->
 
-<section class="editor">
-<div class="mobile-tabs"><button class="active" id="editTab">Edit</button><button id="previewTab">Preview</button></div>
+  <header class="topbar">
 
-<section class="editor-section active" data-section="personal">
-  <div class="section-head"><div><span class="kicker">01 · PROFILE</span><h1>Personal information</h1><p>Tell employers who you are and how they can reach you.</p></div></div>
-  <div class="photo-card"><div class="photo-circle"><img id="photoThumb" alt="Profile photo"><span id="photoEmpty">+</span></div><div><strong>Profile photo <small>Optional</small></strong><p>Use a clear professional photo. JPG, PNG or WEBP.</p><label class="file-btn">Choose photo<input id="profilePhoto" type="file" accept="image/*"></label><button class="text-btn" id="removePhoto" type="button">Remove</button></div></div>
-  <div class="card form-card">
-    <div class="form-grid two">
-      <label>Full name<input id="fullName" placeholder="e.g. Ananya Sharma"></label>
-      <label>Professional title<input id="jobTitle" placeholder="e.g. Software Engineer"></label>
-      <label>Email<input id="email" type="email" placeholder="you@example.com"></label>
-      <label>Phone<input id="phone" type="tel" placeholder="+91 98765 43210"></label>
-      <label>Country<select id="country"><option value="India">India</option><option>United States</option><option>United Kingdom</option><option>Canada</option><option>Australia</option><option>Singapore</option><option>Other</option></select></label>
-      <label>State / UT<select id="state"><option value="">Select state or union territory</option></select></label>
-      <label>District<select id="district" disabled><option value="">Select district</option></select></label>
-      <label>City / Town<input id="city" placeholder="e.g. Chennai"></label>
-      <label class="wide">Street address <span class="optional">Optional</span><input id="street" placeholder="House / door no., street, area"></label>
+    <div class="brand">
+      <div class="brand-mark">R</div>
+
+      <div>
+        <h1>Resume Builder</h1>
+        <p>Build a professional one-page resume</p>
+      </div>
     </div>
-    <div class="form-grid three links-row">
-      <label>LinkedIn<input id="linkedin" placeholder="linkedin.com/in/yourname"></label>
-      <label>GitHub<input id="github" placeholder="github.com/yourname"></label>
-      <label>Portfolio<input id="portfolio" placeholder="yourwebsite.com"></label>
+
+    <div class="top-actions">
+
+      <button class="theme-btn" id="themeBtn" title="Toggle theme">
+        ☼
+      </button>
+
+      <button class="clear-btn" id="clearBtn">
+        Clear
+      </button>
+
+      <button class="download-btn" onclick="window.print()">
+        Download PDF
+      </button>
+
     </div>
-  </div>
-</section>
 
-<section class="editor-section" data-section="summary">
-  <div class="section-head"><div><span class="kicker">02 · INTRODUCTION</span><h1>Professional summary</h1><p>Write a concise introduction focused on strengths, experience and career direction.</p></div></div>
-  <div class="card form-card"><label>Summary<textarea id="summary" rows="9" placeholder="Example: Detail-oriented software engineer with experience building responsive web applications..." maxlength="1200"></textarea><div class="field-footer"><span>2–4 sentences recommended</span><span id="summaryCount">0 / 1200</span></div></label></div>
-</section>
+  </header>
 
-<section class="editor-section" data-section="education">
-  <div class="section-head"><div><span class="kicker">03 · EDUCATION</span><h1>Education</h1><p>Add degrees, diplomas, courses and academic qualifications.</p></div></div>
-  <div id="educationEntries"></div><button class="add-btn" data-add="education">＋ Add education</button>
-</section>
-<section class="editor-section" data-section="experience">
-  <div class="section-head"><div><span class="kicker">04 · EXPERIENCE</span><h1>Experience</h1><p>Add jobs, internships, freelance work or other relevant experience.</p></div></div>
-  <div id="experienceEntries"></div><button class="add-btn" data-add="experience">＋ Add experience</button>
-</section>
-<section class="editor-section" data-section="projects">
-  <div class="section-head"><div><span class="kicker">05 · PROJECTS</span><h1>Projects</h1><p>Highlight practical work that demonstrates what you can build and deliver.</p></div></div>
-  <div id="projectEntries"></div><button class="add-btn" data-add="projects">＋ Add project</button>
-</section>
-<section class="editor-section" data-section="skills">
-  <div class="section-head"><div><span class="kicker">06 · EXPERTISE</span><h1>Skills</h1><p>Add technical, professional and domain-specific skills.</p></div></div>
-  <div class="card skill-card"><div class="skill-add"><input id="skillInput" placeholder="Type a skill, then press Enter"><button id="addSkill" class="btn primary">Add</button></div><div class="suggestions" id="skillSuggestions"><button>JavaScript</button><button>Python</button><button>React</button><button>Communication</button><button>Leadership</button><button>Project Management</button></div><div id="skillsList" class="tag-list"></div></div>
-</section>
-<section class="editor-section" data-section="certifications">
-  <div class="section-head"><div><span class="kicker">07 · CREDENTIALS</span><h1>Certifications</h1><p>Add certifications, professional courses and credentials.</p></div></div>
-  <div id="certificationEntries"></div><button class="add-btn" data-add="certifications">＋ Add certification</button>
-</section>
-<section class="editor-section" data-section="achievements">
-  <div class="section-head"><div><span class="kicker">08 · HIGHLIGHTS</span><h1>Achievements</h1><p>Show awards, competitions, recognition and meaningful accomplishments.</p></div></div>
-  <div id="achievementEntries"></div><button class="add-btn" data-add="achievements">＋ Add achievement</button>
-</section>
-<section class="editor-section" data-section="languages">
-  <div class="section-head"><div><span class="kicker">09 · LANGUAGES</span><h1>Languages</h1><p>Add languages and choose a proficiency level.</p></div></div>
-  <div id="languageEntries"></div><button class="add-btn" data-add="languages">＋ Add language</button>
-</section>
-<section class="editor-section" data-section="custom">
-  <div class="section-head"><div><span class="kicker">10 · FLEXIBLE</span><h1>Custom section</h1><p>Use this for publications, volunteering, leadership, research, interests or other relevant information.</p></div></div>
-  <div class="card form-card"><div class="form-grid two"><label>Section title<input id="customTitle" placeholder="e.g. Volunteer Experience"></label><label>Section type<select id="customType"><option>General</option><option>Publications</option><option>Volunteer Experience</option><option>Research</option><option>Leadership</option><option>Interests</option></select></label><label class="wide">Content<textarea id="customContent" rows="8" placeholder="Add concise details. Separate multiple points with new lines."></textarea></label></div></div>
-</section>
-</section>
 
-<aside class="preview-panel" id="previewPanel">
-  <div class="preview-head"><div><span>LIVE PREVIEW</span><b>A4 · Print ready</b></div><div class="zoom-controls"><button id="zoomOut">−</button><span id="zoomLabel">85%</span><button id="zoomIn">＋</button></div></div>
-  <div class="paper-wrap"><article class="resume" id="resumePreview">
-    <header class="resume-header"><div class="resume-identity"><h2 id="previewName">Your Name</h2><p id="previewJobTitle">Professional Title</p><div class="contact" id="previewContact"></div></div><div class="resume-photo" id="previewPhotoWrap"><img id="previewPhoto" alt=""></div></header>
-    <section class="resume-section" id="previewSummarySection"><h3>Professional Summary</h3><p id="previewSummary"></p></section>
-    <section class="resume-section" id="previewExperienceSection"><h3>Experience</h3><div id="previewExperience"></div></section>
-    <section class="resume-section" id="previewEducationSection"><h3>Education</h3><div id="previewEducation"></div></section>
-    <section class="resume-section" id="previewProjectsSection"><h3>Projects</h3><div id="previewProjects"></div></section>
-    <section class="resume-section" id="previewSkillsSection"><h3>Skills</h3><div id="previewSkills" class="resume-tags"></div></section>
-    <section class="resume-section" id="previewCertificationsSection"><h3>Certifications</h3><div id="previewCertifications"></div></section>
-    <section class="resume-section" id="previewAchievementsSection"><h3>Achievements</h3><div id="previewAchievements"></div></section>
-    <section class="resume-section" id="previewLanguagesSection"><h3>Languages</h3><div id="previewLanguages"></div></section>
-    <section class="resume-section" id="previewCustomSection"><h3 id="previewCustomTitle">Additional Information</h3><div id="previewCustomContent"></div></section>
-  </article></div>
-</aside>
-</main>
-</div>
+  <!-- ================= MAIN ================= -->
 
-<div class="modal" id="templateModal" aria-hidden="true"><div class="modal-box"><button class="modal-close" data-close="templateModal">×</button><div class="modal-title"><span class="kicker">DESIGN</span><h2>Choose a resume template</h2><p>Switch the visual structure without losing your content.</p></div><div class="template-grid"><button class="template-card" data-template="professional"><span class="mini professional"></span><b>Professional</b><small>Balanced & ATS-friendly</small></button><button class="template-card" data-template="modern"><span class="mini modern"></span><b>Modern</b><small>Clean with a bold accent</small></button><button class="template-card" data-template="minimal"><span class="mini minimal"></span><b>Minimal</b><small>Elegant and compact</small></button><button class="template-card" data-template="corporate"><span class="mini corporate"></span><b>Corporate</b><small>Structured and formal</small></button><button class="template-card" data-template="creative"><span class="mini creative"></span><b>Creative</b><small>Distinct but professional</small></button></div><div class="color-row"><b>Accent</b><div id="accentChoices"></div></div></div></div>
-<div class="modal" id="fullPreviewModal" aria-hidden="true"><div class="full-modal"><button class="modal-close" data-close="fullPreviewModal">×</button><div class="full-toolbar"><b>Resume Preview</b><button class="btn primary" id="modalDownload">Download PDF</button></div><div class="full-paper"><article class="resume" id="modalResume"></article></div></div></div>
-<div class="modal" id="qualityModal" aria-hidden="true"><div class="modal-box quality-box"><button class="modal-close" data-close="qualityModal">×</button><div class="modal-title"><span class="kicker">CHECK</span><h2>Resume quality check</h2><p>Simple completeness guidance — not a recruiter or ATS score.</p></div><div id="qualityList"></div></div></div>
-<div class="toast" id="toast"></div>
-<script src="script.js"></script>
+  <main class="app">
+
+    <!-- ================= EDITOR ================= -->
+
+    <section class="editor">
+
+      <div class="editor-heading">
+        <div>
+          <span class="eyebrow">RESUME EDITOR</span>
+          <h2>Your Information</h2>
+          <p>Fill in only what you need. Your resume updates instantly.</p>
+        </div>
+      </div>
+
+
+      <!-- PERSONAL INFORMATION -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">01</span>
+
+          <div>
+            <h3>Personal Information</h3>
+            <p>Your basic professional details</p>
+          </div>
+        </div>
+
+
+        <div class="photo-area">
+
+          <div class="photo-preview" id="photoPreview">
+            <span>+</span>
+          </div>
+
+          <div>
+            <label class="upload-label">
+              Profile Photo
+              <input type="file" id="photoInput" accept="image/*">
+            </label>
+
+            <small>Optional • JPG or PNG</small>
+          </div>
+
+        </div>
+
+
+        <div class="grid two">
+
+          <div class="field">
+            <label>Full Name *</label>
+            <input id="name" type="text" placeholder="e.g. Alex Johnson">
+          </div>
+
+          <div class="field">
+            <label>Professional Title</label>
+            <input id="title" type="text" placeholder="e.g. Frontend Developer">
+          </div>
+
+          <div class="field">
+            <label>Email *</label>
+            <input id="email" type="email" placeholder="alex@email.com">
+          </div>
+
+          <div class="field">
+            <label>Phone</label>
+            <input id="phone" type="tel" placeholder="+91 98765 43210">
+          </div>
+
+          <div class="field">
+            <label>Country</label>
+            <select id="country">
+              <option value="">Select country</option>
+              <option>India</option>
+              <option>United States</option>
+              <option>United Kingdom</option>
+              <option>Canada</option>
+              <option>Australia</option>
+              <option>Germany</option>
+              <option>Singapore</option>
+              <option>United Arab Emirates</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>State / Province</label>
+            <select id="state">
+              <option value="">Select state</option>
+              <option>Tamil Nadu</option>
+              <option>Kerala</option>
+              <option>Karnataka</option>
+              <option>Andhra Pradesh</option>
+              <option>Telangana</option>
+              <option>Maharashtra</option>
+              <option>Delhi</option>
+              <option>West Bengal</option>
+              <option>Gujarat</option>
+              <option>Rajasthan</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>District</label>
+            <select id="district">
+              <option value="">Select district</option>
+              <option>Chennai</option>
+              <option>Coimbatore</option>
+              <option>Madurai</option>
+              <option>Salem</option>
+              <option>Trichy</option>
+              <option>Tirunelveli</option>
+              <option>Thanjavur</option>
+              <option>Erode</option>
+              <option>Vellore</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>City / Town</label>
+            <input id="city" type="text" placeholder="e.g. Chennai">
+          </div>
+
+        </div>
+
+
+        <div class="field">
+          <label>Street Address</label>
+          <input id="address" type="text" placeholder="Street, Area, Building / Door No.">
+        </div>
+
+
+        <div class="grid two">
+
+          <div class="field">
+            <label>LinkedIn</label>
+            <input id="linkedin" type="url" placeholder="linkedin.com/in/yourname">
+          </div>
+
+          <div class="field">
+            <label>GitHub / Portfolio</label>
+            <input id="github" type="url" placeholder="github.com/yourname">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUMMARY -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">02</span>
+
+          <div>
+            <h3>Professional Summary</h3>
+            <p>A short introduction about you</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <textarea
+            id="summary"
+            rows="5"
+            placeholder="Write 2–4 concise sentences describing your background, strengths and career goals."
+          ></textarea>
+        </div>
+
+      </div>
+
+
+      <!-- EXPERIENCE -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">03</span>
+
+          <div>
+            <h3>Experience</h3>
+            <p>Add your most relevant experience</p>
+          </div>
+        </div>
+
+        <div id="experienceList"></div>
+
+        <button class="add-btn" onclick="addExperience()">
+          + Add Experience
+        </button>
+
+      </div>
+
+
+      <!-- EDUCATION -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">04</span>
+
+          <div>
+            <h3>Education</h3>
+            <p>Your academic background</p>
+          </div>
+        </div>
+
+        <div id="educationList"></div>
+
+        <button class="add-btn" onclick="addEducation()">
+          + Add Education
+        </button>
+
+      </div>
+
+
+      <!-- PROJECTS -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">05</span>
+
+          <div>
+            <h3>Projects</h3>
+            <p>Show your strongest work</p>
+          </div>
+        </div>
+
+        <div id="projectList"></div>
+
+        <button class="add-btn" onclick="addProject()">
+          + Add Project
+        </button>
+
+      </div>
+
+
+      <!-- SKILLS -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">06</span>
+
+          <div>
+            <h3>Skills</h3>
+            <p>Technical and professional skills</p>
+          </div>
+        </div>
+
+        <div class="skill-input">
+
+          <input
+            id="skillInput"
+            type="text"
+            placeholder="e.g. JavaScript"
+          >
+
+          <button onclick="addSkill()">Add</button>
+
+        </div>
+
+        <div class="skill-list" id="skillList"></div>
+
+      </div>
+
+
+      <!-- CERTIFICATIONS -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">07</span>
+
+          <div>
+            <h3>Certifications</h3>
+            <p>Relevant certifications only</p>
+          </div>
+        </div>
+
+        <div id="certificationList"></div>
+
+        <button class="add-btn" onclick="addCertification()">
+          + Add Certification
+        </button>
+
+      </div>
+
+
+      <!-- LANGUAGES -->
+
+      <div class="card">
+
+        <div class="card-title">
+          <span class="number">08</span>
+
+          <div>
+            <h3>Languages</h3>
+            <p>Languages you can communicate in</p>
+          </div>
+        </div>
+
+        <div id="languageList"></div>
+
+        <button class="add-btn" onclick="addLanguage()">
+          + Add Language
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= PREVIEW ================= -->
+
+    <section class="preview-area">
+
+      <div class="preview-header">
+
+        <div>
+          <span class="eyebrow">LIVE PREVIEW</span>
+          <h2>Your Resume</h2>
+        </div>
+
+        <div class="preview-tools">
+
+          <select id="templateSelect">
+            <option value="classic">Classic</option>
+            <option value="modern">Modern</option>
+            <option value="minimal">Minimal</option>
+          </select>
+
+          <input
+            type="color"
+            id="accentColor"
+            value="#3157d5"
+            title="Accent colour"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="resume-frame">
+
+        <article class="resume" id="resume">
+
+          <!-- RESUME HEADER -->
+
+          <header class="resume-header">
+
+            <div class="resume-identity">
+
+              <h1 id="previewName">Your Name</h1>
+
+              <h2 id="previewTitle">
+                Professional Title
+              </h2>
+
+              <div class="contact-line" id="previewContact">
+                email@example.com
+              </div>
+
+              <div class="links-line" id="previewLinks"></div>
+
+            </div>
+
+            <img
+              id="previewPhoto"
+              class="resume-photo"
+              alt=""
+            >
+
+          </header>
+
+
+          <!-- SUMMARY -->
+
+          <section
+            class="resume-section"
+            id="summarySection"
+          >
+
+            <h3>PROFILE</h3>
+
+            <p id="previewSummary">
+              Your professional summary will appear here.
+            </p>
+
+          </section>
+
+
+          <!-- EXPERIENCE -->
+
+          <section
+            class="resume-section hidden"
+            id="experienceSection"
+          >
+
+            <h3>EXPERIENCE</h3>
+
+            <div id="previewExperience"></div>
+
+          </section>
+
+
+          <!-- EDUCATION -->
+
+          <section
+            class="resume-section hidden"
+            id="educationSection"
+          >
+
+            <h3>EDUCATION</h3>
+
+            <div id="previewEducation"></div>
+
+          </section>
+
+
+          <!-- PROJECTS -->
+
+          <section
+            class="resume-section hidden"
+            id="projectSection"
+          >
+
+            <h3>PROJECTS</h3>
+
+            <div id="previewProjects"></div>
+
+          </section>
+
+
+          <!-- SKILLS -->
+
+          <section
+            class="resume-section hidden"
+            id="skillSection"
+          >
+
+            <h3>SKILLS</h3>
+
+            <div
+              class="resume-skills"
+              id="previewSkills"
+            ></div>
+
+          </section>
+
+
+          <!-- CERTIFICATIONS -->
+
+          <section
+            class="resume-section hidden"
+            id="certificationSection"
+          >
+
+            <h3>CERTIFICATIONS</h3>
+
+            <div id="previewCertifications"></div>
+
+          </section>
+
+
+          <!-- LANGUAGES -->
+
+          <section
+            class="resume-section hidden"
+            id="languageSection"
+          >
+
+            <h3>LANGUAGES</h3>
+
+            <div
+              class="resume-languages"
+              id="previewLanguages"
+            ></div>
+
+          </section>
+
+        </article>
+
+      </div>
+
+      <div class="pdf-note">
+        <strong>A4 one-page resume</strong>
+        <span>Use “Download PDF” to save the final resume.</span>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script src="script.js"></script>
+
 </body>
 </html>
